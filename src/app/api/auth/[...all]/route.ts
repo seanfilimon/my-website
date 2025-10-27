@@ -1,16 +1,4 @@
-import { authHandler } from "@/lib/auth";
+import { auth } from "@/src/lib/auth";
+import { toNextJsHandler } from "better-auth/next-js";
 
-/**
- * Better Auth API route handler
- * Handles all authentication endpoints:
- * - POST /api/auth/sign-in/email
- * - POST /api/auth/sign-up/email
- * - POST /api/auth/sign-out
- * - GET  /api/auth/session
- * - POST /api/auth/magic-link/send
- * - GET  /api/auth/callback/google
- * - GET  /api/auth/callback/github
- * - And many more...
- */
-export const { GET, POST } = authHandler;
-
+export const { GET, POST } = toNextJsHandler(auth.handler);

@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
-import { db } from "@/lib/db";
+import { db } from "@/src/lib/db";
 
 /**
  * Context type - defines what's available in all tRPC procedures

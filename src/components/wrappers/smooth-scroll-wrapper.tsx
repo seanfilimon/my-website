@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "@/src/lib/gsap/plugins";
 import { shouldDisableAnimations } from "@/src/lib/utils/device-detection";
 
 export function SmoothScrollWrapper({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -31,8 +34,13 @@ export function SmoothScrollWrapper({ children }: { children: React.ReactNode })
       limitCallbacks: true,
     });
 
-    // Normalize scroll behavior
-    ScrollTrigger.normalizeScroll(true);
+    // Only normalize scroll for pages that use document-level scrolling
+    // Pages like /resources and /github have their own internal scrolling
+    const shouldNormalizeScroll = !pathname?.startsWith("/resources") && !pathname?.startsWith("/github");
+    
+    if (shouldNormalizeScroll) {
+      ScrollTrigger.normalizeScroll(true);
+    }
 
     // Refresh ScrollTrigger after initialization
     const timeoutId = setTimeout(() => {
@@ -44,8 +52,12 @@ export function SmoothScrollWrapper({ children }: { children: React.ReactNode })
       clearTimeout(timeoutId);
       // Kill all ScrollTrigger instances on unmount
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      // Disable normalize scroll if it was enabled
+      if (shouldNormalizeScroll) {
+        ScrollTrigger.normalizeScroll(false);
+      }
     };
-  }, []);
+  }, [pathname]);
 
   return <>{children}</>;
 }

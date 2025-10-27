@@ -65,7 +65,7 @@ export const horizontalGallery = (
       end: () => `+=${totalWidth}`,
       scrub,
       pin: true,
-      snap: snap ? 1 / (itemsArray.length - 1) : false,
+      ...(snap && { snap: 1 / (itemsArray.length - 1) }),
     },
   });
 
@@ -93,7 +93,7 @@ export const infiniteHorizontalScroll = (
     containerEl.appendChild(clone);
   });
 
-  const totalWidth = items.reduce((acc, item) => acc + (item as HTMLElement).offsetWidth, 0);
+  const totalWidth = items.reduce((acc: number, item) => acc + (item as HTMLElement).offsetWidth, 0);
 
   return gsap.to(containerEl, {
     x: -totalWidth,

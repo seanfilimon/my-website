@@ -39,7 +39,6 @@ export const useThemeTransition = (options: ThemeTransitionOptions = {}) => {
         Math.max(y, window.innerHeight - y)
       );
 
-      // @ts-expect-error document.startViewTransition is not in TypeScript types yet
       const transition = document.startViewTransition(async () => {
         if (targetTheme) {
           setTheme(targetTheme);

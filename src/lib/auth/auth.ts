@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { db } from "@/lib/db";
+import { db } from "@/src/lib/db";
 import {
   lastLoginMethod,
   jwt,

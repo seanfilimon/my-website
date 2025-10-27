@@ -49,10 +49,10 @@ export function ResourcesSidebar({
   return (
     <aside 
       ref={containerRef}
-      className="h-full w-full border-r bg-muted/10 overflow-hidden"
+      className="h-full w-full border-r bg-muted/10 flex flex-col overflow-hidden"
     >
-      {/* Scrollable content container */}
-      <div className="h-full overflow-y-auto overflow-x-hidden scrollbar-thin">
+      {/* Scrollable content container - takes full height */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin">
         <div className="p-4">
           {/* Header Section */}
           <div className="mb-6">

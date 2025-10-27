@@ -178,6 +178,17 @@
 
   body {
     overflow-x: hidden;
+    overflow-y: auto;
+  }
+  
+  /* Prevent horizontal overflow on all elements */
+  * {
+    max-width: 100%;
+  }
+  
+  /* Allow specific elements to exceed if needed */
+  html, body {
+    max-width: none;
   }
 
   /* Enhanced smooth scrolling */
@@ -307,73 +318,5 @@
 
   :root.dark::view-transition-new(root) {
     z-index: 2147483646;
-  }
-
-  /* Normal scrollbar for resources and github pages - not absolute overlay */
-  .resources-content,
-  .github-content,
-  .resources-sidebar-wrapper,
-  .github-sidebar-wrapper {
-    scrollbar-width: auto;
-    scrollbar-color: oklch(0.556 0 0 / 0.7) oklch(0.97 0 0);
-  }
-
-  .resources-content::-webkit-scrollbar,
-  .github-content::-webkit-scrollbar,
-  .resources-sidebar-wrapper ::-webkit-scrollbar,
-  .github-sidebar-wrapper ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-  }
-
-  .resources-content::-webkit-scrollbar-track,
-  .github-content::-webkit-scrollbar-track,
-  .resources-sidebar-wrapper ::-webkit-scrollbar-track,
-  .github-sidebar-wrapper ::-webkit-scrollbar-track {
-    background: oklch(0.97 0 0);
-  }
-
-  .resources-content::-webkit-scrollbar-thumb,
-  .github-content::-webkit-scrollbar-thumb,
-  .resources-sidebar-wrapper ::-webkit-scrollbar-thumb,
-  .github-sidebar-wrapper ::-webkit-scrollbar-thumb {
-    background: oklch(0.556 0 0 / 0.7);
-    border-radius: 6px;
-  }
-
-  .resources-content::-webkit-scrollbar-thumb:hover,
-  .github-content::-webkit-scrollbar-thumb:hover,
-  .resources-sidebar-wrapper ::-webkit-scrollbar-thumb:hover,
-  .github-sidebar-wrapper ::-webkit-scrollbar-thumb:hover {
-    background: oklch(0.456 0 0 / 0.8);
-  }
-
-  /* Dark mode scrollbar for resources/github */
-  .dark .resources-content,
-  .dark .github-content,
-  .dark .resources-sidebar-wrapper,
-  .dark .github-sidebar-wrapper {
-    scrollbar-color: oklch(0.556 0 0 / 0.7) oklch(0.205 0 0);
-  }
-
-  .dark .resources-content::-webkit-scrollbar-track,
-  .dark .github-content::-webkit-scrollbar-track,
-  .dark .resources-sidebar-wrapper ::-webkit-scrollbar-track,
-  .dark .github-sidebar-wrapper ::-webkit-scrollbar-track {
-    background: oklch(0.205 0 0);
-  }
-
-  .dark .resources-content::-webkit-scrollbar-thumb,
-  .dark .github-content::-webkit-scrollbar-thumb,
-  .dark .resources-sidebar-wrapper ::-webkit-scrollbar-thumb,
-  .dark .github-sidebar-wrapper ::-webkit-scrollbar-thumb {
-    background: oklch(0.556 0 0 / 0.7);
-  }
-
-  .dark .resources-content::-webkit-scrollbar-thumb:hover,
-  .dark .github-content::-webkit-scrollbar-thumb:hover,
-  .dark .resources-sidebar-wrapper ::-webkit-scrollbar-thumb:hover,
-  .dark .github-sidebar-wrapper ::-webkit-scrollbar-thumb:hover {
-    background: oklch(0.656 0 0 / 0.8);
   }
 }

@@ -6,176 +6,147 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { 
   IoArrowForwardOutline,
   IoTimeOutline,
-  IoBookOutline,
-  IoCodeSlashOutline,
+  IoCalendarOutline,
+  IoSearchOutline,
+  IoFilterOutline,
   IoHomeOutline,
   IoChevronForwardOutline
 } from "react-icons/io5";
-import { useResources } from "./resources-context";
+import { useResources } from "../resources-context";
 
-// Featured Technologies with categories
-const featuredTopics = [
-  {
-    id: "nextjs",
-    name: "Next.js",
-    category: "Framework",
-    logo: "▲",
-    color: "#000000",
-    description: "The React Framework for Production - Server rendering, static sites, and more",
-    tutorials: 12,
-    guides: 8,
-    articles: 5,
-    image: "/bg-pattern.png",
-    href: "/resources/nextjs"
-  },
-  {
-    id: "react",
-    name: "React",
-    category: "Framework",
-    logo: "⚛",
-    color: "#61DAFB",
-    description: "A JavaScript library for building user interfaces with component-based architecture",
-    tutorials: 18,
-    guides: 12,
-    articles: 10,
-    image: "/bg-pattern.png",
-    href: "/resources/react"
-  },
-  {
-    id: "typescript",
-    name: "TypeScript",
-    category: "Language",
-    logo: "TS",
-    color: "#3178C6",
-    description: "JavaScript with syntax for types - Build scalable applications with confidence",
-    tutorials: 15,
-    guides: 10,
-    articles: 8,
-    image: "/bg-pattern.png",
-    href: "/resources/typescript"
-  },
-  {
-    id: "nuxtjs",
-    name: "Nuxt.js",
-    category: "Framework",
-    logo: "N",
-    color: "#00DC82",
-    description: "The Intuitive Vue Framework - Create performant and SEO-friendly web applications",
-    tutorials: 10,
-    guides: 6,
-    articles: 4,
-    image: "/bg-pattern.png",
-    href: "/resources/nuxtjs"
-  },
-  {
-    id: "tailwind",
-    name: "Tailwind CSS",
-    category: "Framework",
-    logo: "🎨",
-    color: "#06B6D4",
-    description: "A utility-first CSS framework for rapidly building custom user interfaces",
-    tutorials: 14,
-    guides: 8,
-    articles: 5,
-    image: "/bg-pattern.png",
-    href: "/resources/tailwind"
-  },
-  {
-    id: "nodejs",
-    name: "Node.js",
-    category: "Language",
-    logo: "N",
-    color: "#339933",
-    description: "JavaScript runtime built on Chrome's V8 engine for building scalable network applications",
-    tutorials: 16,
-    guides: 11,
-    articles: 9,
-    image: "/bg-pattern.png",
-    href: "/resources/nodejs"
-  }
-];
-
-// Recent articles
-const recentArticles = [
+// Sample articles data
+const articles = [
   {
     id: 1,
     title: "Getting Started with Next.js 16",
+    excerpt: "A comprehensive guide to getting started with the latest version of Next.js, covering new features and best practices.",
     category: "Framework",
+    author: "Sean Filimon",
     image: "/bg-pattern.png",
     readTime: "8 min read",
     publishedAt: "2 days ago",
+    tags: ["Next.js", "React", "Web Development"],
     href: "/articles/nextjs-16-guide"
   },
   {
     id: 2,
     title: "TypeScript Advanced Patterns",
+    excerpt: "Deep dive into advanced TypeScript patterns including generics, conditional types, and mapped types.",
     category: "Language",
+    author: "Sean Filimon",
     image: "/bg-pattern.png",
     readTime: "12 min read",
     publishedAt: "5 days ago",
+    tags: ["TypeScript", "JavaScript", "Programming"],
     href: "/articles/typescript-patterns"
   },
   {
     id: 3,
     title: "Building Scalable APIs",
+    excerpt: "Learn how to design and build scalable REST and GraphQL APIs that can handle millions of requests.",
     category: "Backend",
+    author: "Sean Filimon",
     image: "/bg-pattern.png",
     readTime: "15 min read",
     publishedAt: "1 week ago",
+    tags: ["API", "Backend", "Architecture"],
     href: "/articles/scalable-apis"
   },
   {
     id: 4,
     title: "Modern CSS Techniques",
+    excerpt: "Explore modern CSS features like Grid, Flexbox, Custom Properties, and Container Queries.",
     category: "Frontend",
+    author: "Sean Filimon",
     image: "/bg-pattern.png",
     readTime: "10 min read",
     publishedAt: "2 weeks ago",
+    tags: ["CSS", "Frontend", "Web Design"],
     href: "/articles/modern-css"
   },
   {
     id: 5,
     title: "React Performance Tips",
+    excerpt: "Optimize your React applications with these performance tips and best practices.",
     category: "Framework",
+    author: "Sean Filimon",
     image: "/bg-pattern.png",
     readTime: "9 min read",
     publishedAt: "2 weeks ago",
+    tags: ["React", "Performance", "Optimization"],
     href: "/articles/react-performance"
   },
   {
     id: 6,
     title: "Mastering Tailwind CSS",
+    excerpt: "Complete guide to mastering Tailwind CSS for rapid UI development.",
     category: "Framework",
+    author: "Sean Filimon",
     image: "/bg-pattern.png",
     readTime: "11 min read",
     publishedAt: "3 weeks ago",
+    tags: ["Tailwind", "CSS", "UI"],
     href: "/articles/mastering-tailwind"
-  }
+  },
+  {
+    id: 7,
+    title: "Database Design Principles",
+    excerpt: "Essential principles for designing efficient and scalable database schemas.",
+    category: "Database",
+    author: "Sean Filimon",
+    image: "/bg-pattern.png",
+    readTime: "13 min read",
+    publishedAt: "3 weeks ago",
+    tags: ["Database", "SQL", "Architecture"],
+    href: "/articles/database-design"
+  },
+  {
+    id: 8,
+    title: "Authentication Best Practices",
+    excerpt: "Implement secure authentication in your applications following industry best practices.",
+    category: "Security",
+    author: "Sean Filimon",
+    image: "/bg-pattern.png",
+    readTime: "14 min read",
+    publishedAt: "1 month ago",
+    tags: ["Security", "Auth", "Backend"],
+    href: "/articles/auth-best-practices"
+  },
 ];
 
-export default function ResourcesPage() {
+const categories = ["All", "Framework", "Language", "Backend", "Frontend", "Database", "Security"];
+
+export default function ArticlesPage() {
   const { toggleSidebar } = useResources();
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // Auto-scroll delegation - make the content area respond to wheel events anywhere on the page
+  // Filter articles
+  const filteredArticles = articles.filter(article => {
+    const matchesCategory = selectedCategory === "All" || article.category === selectedCategory;
+    const matchesSearch = searchTerm === "" || 
+      article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+    return matchesCategory && matchesSearch;
+  });
+
+  // Auto-scroll delegation
   useEffect(() => {
     const content = sectionRef.current;
     if (!content) return;
 
     const handleWheel = (e: WheelEvent) => {
       const target = e.target as HTMLElement;
-      
-      // Check if target is within a scrollable area
       const isOverSidebar = target.closest('.resources-sidebar-wrapper');
       const isOverContent = target.closest('.resources-content');
       
-      // If not over any scrollable area, forward to content
       if (!isOverSidebar && !isOverContent) {
-        // Don't prevent default - let browser handle it naturally
-        // Just programmatically scroll the content as well
         content.scrollBy({
           top: e.deltaY,
           left: e.deltaX,
@@ -184,7 +155,6 @@ export default function ResourcesPage() {
       }
     };
 
-    // Use passive listener to not block scrolling performance
     document.addEventListener('wheel', handleWheel, { passive: true });
 
     return () => {
@@ -192,18 +162,17 @@ export default function ResourcesPage() {
     };
   }, []);
 
-  // GSAP Animations for content - NO sidebar animation
+  // GSAP Animations - NO sidebar animation
   useEffect(() => {
     if (!sectionRef.current) return;
 
     gsap.registerPlugin(ScrollTrigger);
 
-    // Enable smooth scrolling on the content area
     if (sectionRef.current) {
       sectionRef.current.style.scrollBehavior = 'smooth';
     }
 
-    // Animate breadcrumb
+    // Animate breadcrumb only
     gsap.fromTo(
       ".breadcrumb-section",
       { opacity: 0, y: -15 },
@@ -212,48 +181,22 @@ export default function ResourcesPage() {
         y: 0,
         duration: 0.4,
         ease: "power3.out",
-        delay: 0.2
+        delay: 0.1
       }
     );
 
-    // Configure ScrollTrigger to use the content area as scroller
-    ScrollTrigger.config({
-      autoRefreshEvents: "visibilitychange,DOMContentLoaded,load"
-    });
-
-    // Topics animation - using content scroller
-    gsap.fromTo(
-      ".topic-card",
-      { opacity: 0, y: 30, scale: 0.95 },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.6,
-        stagger: 0.08,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: ".topics-grid",
-          start: "top 75%",
-          toggleActions: "play none none none",
-          scroller: ".resources-content"
-        }
-      }
-    );
-
-    // Articles animation - using content scroller
+    // Animate article cards
     gsap.fromTo(
       ".article-card",
-      { opacity: 0, y: 30, scale: 0.95 },
+      { opacity: 0, y: 30 },
       {
         opacity: 1,
         y: 0,
-        scale: 1,
         duration: 0.6,
         stagger: 0.08,
         ease: "power2.out",
         scrollTrigger: {
-          trigger: ".articles-grid",
+          trigger: ".articles-container",
           start: "top 75%",
           toggleActions: "play none none none",
           scroller: ".resources-content"
@@ -263,12 +206,11 @@ export default function ResourcesPage() {
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-      // Reset scroll behavior on cleanup
       if (sectionRef.current) {
         sectionRef.current.style.scrollBehavior = 'auto';
       }
     };
-  }, []);
+  }, [selectedCategory, searchTerm]);
 
   return (
     <main ref={sectionRef} className="resources-content flex-1 min-w-0 h-full overflow-y-auto overflow-x-hidden">
@@ -285,83 +227,82 @@ export default function ResourcesPage() {
                   <span className="hidden sm:inline">Home</span>
                 </Link>
                 <IoChevronForwardOutline className="h-3 w-3 text-muted-foreground" />
-                <span className="font-medium text-foreground">Learning Resources</span>
+                <Link 
+                  href="/resources" 
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Resources
+                </Link>
+                <IoChevronForwardOutline className="h-3 w-3 text-muted-foreground" />
+                <span className="font-medium text-foreground">Articles</span>
               </div>
               
-              {/* Mobile Menu Toggle */}
               <button
                 onClick={toggleSidebar}
                 className="lg:hidden flex items-center gap-2 px-3 py-1.5 text-sm font-medium border rounded-sm hover:bg-accent transition-colors"
               >
-                <IoCodeSlashOutline className="h-4 w-4" />
-                <span>Browse</span>
+                <IoFilterOutline className="h-4 w-4" />
+                <span>Filter</span>
               </button>
             </div>
             <p className="text-xs text-muted-foreground">
-              Comprehensive guides, tutorials, and articles for modern web development
+              In-depth articles covering web development, programming, and software engineering
             </p>
           </div>
         </div>
 
-        {/* Featured Topics - styled like services section */}
-        <section className="py-12 px-4 sm:px-6 lg:px-8 bg-muted/5">
-          <div className="w-full">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-3">
-                Featured Technologies
-              </h2>
-              <p className="text-base text-muted-foreground max-w-2xl mx-auto">
-                Popular frameworks and languages to build modern applications
-              </p>
+        {/* Search and Filter Bar */}
+        <div className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+          <div className="w-full px-4 py-4 space-y-4">
+            {/* Search */}
+            <div className="relative">
+              <IoSearchOutline className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <input
+                type="search"
+                placeholder="Search articles..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 text-sm rounded-sm border border-border bg-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+              />
             </div>
 
-            <div className="topics-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-              {featuredTopics.map((topic) => (
-                <Link
-                  key={topic.id}
-                  href={topic.href}
-                  className="topic-card group relative flex flex-col items-center p-4 rounded-lg border bg-card hover:border-primary hover:shadow-md transition-all cursor-pointer select-none"
+            {/* Category Filter */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
+              {categories.map(category => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-sm whitespace-nowrap transition-colors ${
+                    selectedCategory === category
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
                 >
-                  {/* Logo */}
-                  <div
-                    className="flex items-center justify-center h-14 w-14 rounded-lg text-2xl font-bold mb-3 transition-transform duration-200 group-hover:scale-110"
-                    style={{ 
-                      backgroundColor: `${topic.color}20`,
-                      color: topic.color
-                    }}
-                  >
-                    {topic.logo}
-                  </div>
-
-                  {/* Name */}
-                  <h3 className="text-sm font-semibold text-center mb-1 group-hover:text-primary transition-colors">
-                    {topic.name}
-                  </h3>
-
-                  {/* Category Badge */}
-                  <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded bg-accent text-accent-foreground">
-                    {topic.category}
-                  </span>
-                </Link>
+                  {category}
+                </button>
               ))}
             </div>
           </div>
-        </section>
+        </div>
 
-        {/* Recent Articles - styled like services section */}
-        <section className="py-12 px-4 sm:px-6 lg:px-8">
-          <div className="w-full">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-3">
-                Latest Articles
-              </h2>
-              <p className="text-base text-muted-foreground max-w-2xl mx-auto">
-                Fresh insights and tutorials from the development community
-              </p>
+        {/* Articles Grid */}
+        <div className="articles-container py-8 px-4 sm:px-6 lg:px-8">
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-2xl font-bold">
+              {selectedCategory === "All" ? "All Articles" : `${selectedCategory} Articles`}
+            </h2>
+            <span className="text-sm text-muted-foreground">
+              {filteredArticles.length} {filteredArticles.length === 1 ? 'article' : 'articles'}
+            </span>
+          </div>
+
+          {filteredArticles.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No articles found matching your criteria.</p>
             </div>
-
-            <div className="articles-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {recentArticles.map((article) => (
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {filteredArticles.map((article) => (
                 <Link
                   key={article.id}
                   href={article.href}
@@ -402,6 +343,18 @@ export default function ResourcesPage() {
                         </span>
                       </div>
 
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-1.5">
+                        {article.tags.slice(0, 3).map(tag => (
+                          <span
+                            key={tag}
+                            className="px-2 py-0.5 text-xs rounded bg-accent text-accent-foreground"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
                       {/* Meta Info */}
                       <div className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
@@ -415,18 +368,9 @@ export default function ResourcesPage() {
                 </Link>
               ))}
             </div>
-
-            {/* View All Button */}
-            <div className="text-center mt-8">
-              <Button asChild variant="outline" size="sm" className="rounded-sm">
-                <Link href="/articles" className="flex items-center gap-2">
-                  View All Articles
-                  <IoArrowForwardOutline className="h-3.5 w-3.5" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </section>
-      </main>
+          )}
+        </div>
+    </main>
   );
 }
+

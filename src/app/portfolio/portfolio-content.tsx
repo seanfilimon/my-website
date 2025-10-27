@@ -494,14 +494,17 @@ export function PortfolioContent() {
         {filteredProjects.length === 0 && (
           <div className="text-center py-16">
             <p className="text-muted-foreground">
-              No projects found in this category.
+              No projects found matching your criteria.
             </p>
             <Button 
-              onClick={() => setSelectedCategory("All")}
+              onClick={() => {
+                setSelectedTags([]);
+                setSearchQuery("");
+              }}
               variant="outline"
               className="mt-4 rounded-sm"
             >
-              View All Projects
+              Clear Filters
             </Button>
           </div>
         )}

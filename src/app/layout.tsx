@@ -5,6 +5,7 @@ import { UnifiedNavbar } from "@/src/components/navigation/unified-navbar";
 import { SmoothScrollWrapper } from "@/src/components/wrappers/smooth-scroll-wrapper";
 import { ThemeProvider } from "@/src/components/providers/theme-provider";
 import { ConditionalFooter } from "@/src/components/layouts/conditional-footer";
+import { ConditionalContainer } from "@/src/components/layouts/conditional-container";
 
 const ubuntu = Ubuntu({
   variable: "--font-ubuntu",
@@ -36,10 +37,10 @@ export default function RootLayout({
         <ThemeProvider>
         <SmoothScrollWrapper>
             <UnifiedNavbar />
-          <main className="pt-16">
-            <div className="container max-w-7xl mx-auto border-l border-r min-h-screen">
+          <main className="pt-16 min-h-screen">
+            <ConditionalContainer>
               {children}
-            </div>
+            </ConditionalContainer>
           </main>
             <ConditionalFooter />
         </SmoothScrollWrapper>
