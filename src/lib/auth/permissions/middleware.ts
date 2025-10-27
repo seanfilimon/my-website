@@ -1,4 +1,4 @@
-import type { Session, User } from "../auth";
+import type { Session } from "../auth";
 import { hasPermission, hasAllPermissions } from "./roles";
 import type { Permission } from "./domains";
 import type { Role } from "./types";

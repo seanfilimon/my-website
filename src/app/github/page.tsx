@@ -8,9 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   IoLogoGithub,
   IoHomeOutline,
-  IoChevronForwardOutline,
-  IoGitCommitOutline,
-  IoCalendarOutline
+  IoChevronForwardOutline
 } from "react-icons/io5";
 import { GitHubSidebar, CompactRepoCard, repositories, techCategories, ContributionGraph, generateYearData } from "@/src/components/pages/github";
 

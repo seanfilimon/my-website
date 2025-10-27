@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, use } from "react";
+import { createContext, useContext } from "react";
 
 interface ResourcesContextType {
   toggleSidebar: () => void;

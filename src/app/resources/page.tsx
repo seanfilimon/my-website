@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { gsap } from "gsap";
@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { 
   IoArrowForwardOutline,
   IoTimeOutline,
-  IoBookOutline,
   IoCodeSlashOutline,
   IoHomeOutline,
   IoChevronForwardOutline
@@ -261,11 +260,13 @@ export default function ResourcesPage() {
       }
     );
 
+    const content = sectionRef.current;
+    
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
       // Reset scroll behavior on cleanup
-      if (sectionRef.current) {
-        sectionRef.current.style.scrollBehavior = 'auto';
+      if (content) {
+        content.style.scrollBehavior = 'auto';
       }
     };
   }, []);

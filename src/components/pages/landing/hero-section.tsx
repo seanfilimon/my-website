@@ -17,11 +17,6 @@ import {
   IoBuildOutline,
   IoArrowForwardOutline,
   IoPlayCircleOutline,
-  IoLogoGithub,
-  IoLogoTwitter,
-  IoLogoLinkedin,
-  IoStarOutline,
-  IoTimeOutline,
   IoChevronForwardOutline,
   IoChevronBackOutline,
   IoBookOutline,
@@ -222,12 +217,12 @@ export function HeroSection() {
 
                 <div className="space-y-4">
                   <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-                    Welcome to my corner of the internet where I share everything I've learned 
+                    Welcome to my corner of the internet where I share everything I&apos;ve learned 
                     building companies, writing code, and helping developers level up their careers.
                   </p>
                   
                   <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-                    <strong>What you'll find here:</strong> In-depth tutorials, startup case studies, 
+                    <strong>What you&apos;ll find here:</strong> In-depth tutorials, startup case studies, 
                     open-source tools, development guides, and the real stories behind building 
                     successful tech companies from the ground up.
                   </p>

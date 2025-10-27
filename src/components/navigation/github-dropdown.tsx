@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -15,7 +14,6 @@ import {
 import { 
   IoChevronDown, 
   IoLogoGithub, 
-  IoPeopleOutline, 
   IoStarOutline 
 } from "react-icons/io5";
 import type { GitHubUser, GitHubRepo } from "@/src/lib/github/api";

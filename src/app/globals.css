@@ -294,29 +294,4 @@
   [data-radix-portal] {
     position: fixed;
   }
-
-  /* View Transition API styles for theme toggle animation */
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation: none;
-    mix-blend-mode: normal;
-  }
-
-  /* Light to Dark: new content (dark) should be on top with clip-path animation */
-  :root::view-transition-old(root) {
-    z-index: 1;
-  }
-
-  :root::view-transition-new(root) {
-    z-index: 2147483646;
-  }
-
-  /* Dark to Light: new content (light) should be on top with clip-path animation */
-  :root.dark::view-transition-old(root) {
-    z-index: 1;
-  }
-
-  :root.dark::view-transition-new(root) {
-    z-index: 2147483646;
-  }
 }

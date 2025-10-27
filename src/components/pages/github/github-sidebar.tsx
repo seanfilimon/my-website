@@ -1,13 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
 import {
   IoSearchOutline,
   IoChevronDownOutline,
   IoChevronForwardOutline,
-  IoCodeSlashOutline,
-  IoStarOutline
+  IoCodeSlashOutline
 } from "react-icons/io5";
 
 export interface TechCategory {

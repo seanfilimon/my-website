@@ -7,7 +7,7 @@ export function ConditionalContainer({ children }: { children: React.ReactNode }
   
   // Pages that should break out of the container
   const breakoutPages = ["/resources", "/github"];
-  const shouldBreakout = breakoutPages.some(page => pathname?.startsWith(page));
+  const shouldBreakout = pathname ? breakoutPages.some(page => pathname.startsWith(page)) : false;
   
   if (shouldBreakout) {
     return <>{children}</>;

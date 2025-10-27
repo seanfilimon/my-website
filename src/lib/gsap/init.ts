@@ -46,7 +46,7 @@ export const initSmoothScroll = (options?: {
     });
 
     return smoother;
-  } catch (error) {
+  } catch {
     console.warn("ScrollSmoother requires GSAP membership. Using fallback.");
     return null;
   }

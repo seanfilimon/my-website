@@ -1,8 +1,7 @@
 import Link from "next/link";
 import {
   IoStarOutline,
-  IoGitBranchOutline,
-  IoCalendarOutline
+  IoGitBranchOutline
 } from "react-icons/io5";
 
 export interface CompactRepository {

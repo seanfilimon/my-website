@@ -97,9 +97,9 @@ export default function AboutPage() {
           <h2 className="text-3xl font-bold mb-6">Biography</h2>
           <div className="prose prose-invert max-w-none space-y-6 text-muted-foreground leading-relaxed">
             <p className="text-lg">
-              I'm a full-stack developer passionate about creating modern web experiences 
-              that push the boundaries of what's possible. With over 5 years of experience 
-              in the industry, I've helped build products that serve millions of users worldwide.
+              I&apos;m a full-stack developer passionate about creating modern web experiences 
+              that push the boundaries of what&apos;s possible. With over 5 years of experience 
+              in the industry, I&apos;ve helped build products that serve millions of users worldwide.
             </p>
             
             <p>
@@ -111,14 +111,14 @@ export default function AboutPage() {
             </p>
 
             <p>
-              As the Founder & CEO of my own ventures, I've learned that great software is 
-              about more than just code—it's about solving real problems for real people. 
+              As the Founder & CEO of my own ventures, I&apos;ve learned that great software is 
+              about more than just code—it&apos;s about solving real problems for real people. 
               I approach every project with a user-first mindset, focusing on performance, 
               accessibility, and intuitive design.
             </p>
 
             <p>
-              Beyond building products, I'm deeply invested in the developer community. Through 
+              Beyond building products, I&apos;m deeply invested in the developer community. Through 
               my blog, tutorials, and open-source contributions, I share knowledge and help other 
               developers level up their skills. I believe in learning in public and giving back 
               to the community that has given me so much.
@@ -198,9 +198,9 @@ export default function AboutPage() {
         {/* CTA */}
         <div className="border-t pt-12">
           <div className="border rounded-sm p-8 text-center space-y-4">
-            <h2 className="text-2xl font-bold">Let's Work Together</h2>
+            <h2 className="text-2xl font-bold">Let&apos;s Work Together</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              I'm always open to discussing new projects, creative ideas, or opportunities 
+              I&apos;m always open to discussing new projects, creative ideas, or opportunities 
               to be part of your vision.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 pt-4">

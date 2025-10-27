@@ -52,7 +52,7 @@ export default function ContactPage() {
             Get in Touch
           </h1>
           <p className="text-base text-muted-foreground max-w-2xl mx-auto">
-            Have a project in mind or want to collaborate? Let's talk.
+            Have a project in mind or want to collaborate? Let&apos;s talk.
           </p>
         </div>
 
@@ -272,7 +272,7 @@ export default function ContactPage() {
               Other Ways to Connect
             </h2>
             <p className="text-sm text-muted-foreground">
-              Looking for specific opportunities? Here's how we can work together
+              Looking for specific opportunities? Here&apos;s how we can work together
             </p>
           </div>
 
@@ -336,7 +336,7 @@ export default function ContactPage() {
               </p>
               <Button asChild variant="outline" size="sm" className="w-full rounded-sm text-xs">
                 <Link href="mailto:sean@seanfilimon.com?subject=Collaboration">
-                  Let's Talk
+                  Let&apos;s Talk
                 </Link>
               </Button>
             </div>

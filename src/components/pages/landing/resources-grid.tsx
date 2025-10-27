@@ -108,7 +108,7 @@ export function ResourcesGrid() {
 
         {/* Resources Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {resources.map((resource, index) => {
+          {resources.map((resource) => {
             const Icon = resource.icon;
             return (
               <Link
@@ -159,7 +159,7 @@ export function ResourcesGrid() {
         {/* Bottom CTA */}
         <div className="resources-cta mt-16 text-center">
           <p className="text-muted-foreground mb-4">
-            Can't find what you're looking for?
+            Can&apos;t find what you&apos;re looking for?
           </p>
           <Link 
             href="/contact"

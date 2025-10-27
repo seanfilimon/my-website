@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { scrollFadeIn, scrollStaggerReveal } from "@/src/lib/gsap/scroll";
 import { 
@@ -105,7 +104,7 @@ export function ShowcaseSection() {
 
         {/* Showcase Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {showcaseItems.map((item, index) => {
+          {showcaseItems.map((item) => {
             const Icon = item.icon;
             return (
               <div

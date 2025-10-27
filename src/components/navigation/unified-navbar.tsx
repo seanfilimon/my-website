@@ -30,15 +30,14 @@ const resourceTopicTabs = [
 
 export function UnifiedNavbar() {
   const pathname = usePathname();
-  const isResourcesPage = pathname?.startsWith("/resources");
-  const isGitHubPage = pathname?.startsWith("/github");
+  const isResourcesPage = pathname ? pathname.startsWith("/resources") : false;
+  const isGitHubPage = pathname ? pathname.startsWith("/github") : false;
   
   const navRef = useRef<HTMLDivElement>(null);
   const logoSectionRef = useRef<HTMLDivElement>(null);
   const mainNavRef = useRef<HTMLDivElement>(null);
   const resourceNavRef = useRef<HTMLDivElement>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
-  const dividerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!navRef.current) return;

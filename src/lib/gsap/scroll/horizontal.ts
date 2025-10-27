@@ -1,7 +1,6 @@
 "use client";
 
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 /**
  * Horizontal Scroll Section
@@ -19,7 +18,6 @@ export const horizontalScroll = (
 ) => {
   const { start = "top top", scrub = 1, pin = true, markers = false } = options || {};
 
-  const containerEl = gsap.utils.toArray(container)[0] as HTMLElement;
   const sectionsEl = gsap.utils.toArray(sections);
 
   const scrollWidth = sectionsEl.reduce((acc: number, section) => {

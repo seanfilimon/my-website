@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { 
   IoArrowBackOutline,
   IoDownloadOutline,
-  IoLogoGithub,
   IoOpenOutline
 } from "react-icons/io5";
 

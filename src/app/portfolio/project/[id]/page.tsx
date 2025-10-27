@@ -4,11 +4,7 @@ import { Button } from "@/components/ui/button";
 import { 
   IoArrowBackOutline,
   IoOpenOutline,
-  IoLogoGithub,
-  IoStarOutline,
-  IoDownloadOutline,
-  IoCodeSlashOutline,
-  IoRocketOutline
+  IoLogoGithub
 } from "react-icons/io5";
 
 const getProjectData = async (id: string) => {

@@ -84,7 +84,7 @@ export function ContributionGraph({ data }: ContributionGraphProps) {
         <div className="flex gap-[3px]">
           {weeks.map((week, weekIndex) => (
             <div key={weekIndex} className="flex flex-col gap-[3px]">
-              {week.map((day, dayIndex) => (
+              {week.map((day) => (
                 <div
                   key={day.date}
                   onMouseEnter={(e) => handleMouseEnter(day, e)}

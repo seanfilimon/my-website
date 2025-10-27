@@ -1,16 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { gsap } from "gsap";
-import { scrollFadeIn, scrollStaggerReveal } from "@/src/lib/gsap/scroll";
 import { 
   IoArrowForwardOutline,
   IoLogoGithub,
-  IoOpenOutline,
-  IoStarOutline,
   IoSearchOutline,
   IoFunnelOutline,
   IoChevronDownOutline,
@@ -20,7 +16,6 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -233,7 +228,7 @@ export function PortfolioContent() {
           My Portfolio
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Companies, products, and projects I've built while sharing the journey and lessons learned
+          Companies, products, and projects I&apos;ve built while sharing the journey and lessons learned
         </p>
       </div>
 
@@ -461,7 +456,6 @@ export function PortfolioContent() {
                   <div className="flex items-center gap-1.5 mt-1">
                     {project.tags.slice(0, 4).map((tech: string, index: number) => {
                       const size = index === 0 ? 22 : 18;
-                      const iconSize = index === 0 ? 13 : 11;
                       
                       return (
                         <div 
@@ -517,7 +511,7 @@ export function PortfolioContent() {
             Want to Build Something Together?
           </h2>
           <p className="text-muted-foreground">
-            I'm always interested in collaborating on projects that make a difference for developers and entrepreneurs.
+            I&apos;m always interested in collaborating on projects that make a difference for developers and entrepreneurs.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
             <Button asChild className="rounded-sm font-bold text-black dark:text-black uppercase">

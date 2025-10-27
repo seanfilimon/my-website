@@ -5,12 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { 
   IoArrowForwardOutline,
   IoTimeOutline,
-  IoCalendarOutline,
   IoSearchOutline,
   IoFilterOutline,
   IoHomeOutline,
@@ -204,10 +201,12 @@ export default function ArticlesPage() {
       }
     );
 
+    const content = sectionRef.current;
+    
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-      if (sectionRef.current) {
-        sectionRef.current.style.scrollBehavior = 'auto';
+      if (content) {
+        content.style.scrollBehavior = 'auto';
       }
     };
   }, [selectedCategory, searchTerm]);

@@ -4,7 +4,6 @@ import { db } from "@/src/lib/db";
 import {
   lastLoginMethod,
   jwt,
-  captcha,
   admin,
   magicLink,
   username,
@@ -107,7 +106,7 @@ export const auth = betterAuth({
 
     // Magic link authentication (passwordless)
     magicLink({
-      sendMagicLink: async ({ email, token, url }) => {
+      sendMagicLink: async ({ email, url }) => {
         // Implement your email sending logic here
         console.log(`Magic link for ${email}: ${url}`);
         

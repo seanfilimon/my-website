@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import {
   IoSearchOutline,
@@ -21,7 +21,7 @@ export interface ResourceItem {
 
 export interface ResourceCategory {
   category: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   expanded: boolean;
   items: ResourceItem[];
 }
@@ -126,7 +126,7 @@ export function ResourcesSidebar({
                     }}
                   >
                     <div className="ml-6 mt-1 space-y-0.5">
-                      {category.items.map((item, index) => (
+                      {category.items.map((item) => (
                         <Link
                           key={item.id}
                           href={item.href}

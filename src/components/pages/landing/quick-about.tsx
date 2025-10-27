@@ -86,11 +86,11 @@ export function QuickAbout() {
                 About Me
               </h2>
               <p className="text-xl text-muted-foreground leading-relaxed mb-6">
-                I'm Sean, a full-stack developer passionate about building tools and sharing 
+                I&apos;m Sean, a full-stack developer passionate about building tools and sharing 
                 knowledge that helps developers create better software, faster.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                With over 5 years in the industry, I've worked with startups and enterprise 
+                With over 5 years in the industry, I&apos;ve worked with startups and enterprise 
                 companies to build scalable applications. Now I focus on creating educational 
                 content and open-source tools to give back to the community.
               </p>

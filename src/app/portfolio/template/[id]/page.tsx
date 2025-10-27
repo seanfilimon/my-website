@@ -5,9 +5,7 @@ import {
   IoArrowBackOutline,
   IoDownloadOutline,
   IoLogoGithub,
-  IoOpenOutline,
-  IoStarOutline,
-  IoCodeSlashOutline
+  IoOpenOutline
 } from "react-icons/io5";
 
 const getTemplateData = async (id: string) => {
@@ -159,7 +157,7 @@ export default async function TemplatePage({ params }: { params: { id: string } 
         {/* Features & Setup */}
         <div className="grid md:grid-cols-2 gap-12 mb-12">
           <div>
-            <h2 className="text-3xl font-bold mb-6">What's Included</h2>
+            <h2 className="text-3xl font-bold mb-6">What&apos;s Included</h2>
             <ul className="space-y-2">
               {template.features.map((feature, index) => (
                 <li key={index} className="flex items-start gap-2">

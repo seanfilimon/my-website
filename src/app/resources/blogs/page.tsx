@@ -12,7 +12,6 @@ import {
   IoSearchOutline,
   IoArrowForwardOutline,
   IoTimeOutline,
-  IoPersonOutline,
   IoHeartOutline,
   IoChatbubbleOutline
 } from "react-icons/io5";
@@ -236,10 +235,12 @@ export default function BlogsPage() {
       }
     );
 
+    const content = sectionRef.current;
+    
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-      if (sectionRef.current) {
-        sectionRef.current.style.scrollBehavior = 'auto';
+      if (content) {
+        content.style.scrollBehavior = 'auto';
       }
     };
   }, [selectedCategory, searchTerm]);
@@ -270,7 +271,7 @@ export default function BlogsPage() {
         </div>
 
         {/* Search and Filter Bar */}
-        <div className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <div className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
           <div className="w-full px-4 py-4 space-y-4">
             {/* Search */}
             <div className="relative">

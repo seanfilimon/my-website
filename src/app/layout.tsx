@@ -3,7 +3,6 @@ import { Ubuntu, Ubuntu_Mono } from "next/font/google";
 import "./globals.css";
 import { UnifiedNavbar } from "@/src/components/navigation/unified-navbar";
 import { SmoothScrollWrapper } from "@/src/components/wrappers/smooth-scroll-wrapper";
-import { ThemeProvider } from "@/src/components/providers/theme-provider";
 import { ConditionalFooter } from "@/src/components/layouts/conditional-footer";
 import { ConditionalContainer } from "@/src/components/layouts/conditional-container";
 
@@ -30,21 +29,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" className="dark">
       <body
         className={`${ubuntu.variable} ${ubuntuMono.variable} font-sans antialiased`}
       >
-        <ThemeProvider>
         <SmoothScrollWrapper>
-            <UnifiedNavbar />
+          <UnifiedNavbar />
           <main className="pt-16 min-h-screen">
             <ConditionalContainer>
               {children}
             </ConditionalContainer>
           </main>
-            <ConditionalFooter />
+          <ConditionalFooter />
         </SmoothScrollWrapper>
-        </ThemeProvider>
       </body>
     </html>
   );
