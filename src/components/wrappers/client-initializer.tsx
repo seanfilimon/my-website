@@ -5,14 +5,17 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "@/src/lib/gsap/plugins";
 import { shouldDisableAnimations } from "@/src/lib/utils/device-detection";
 
-export function SmoothScrollWrapper({ children }: { children: React.ReactNode }) {
-
+/**
+ * Client-side initializer for GSAP and global client-only setup
+ * This component renders nothing but initializes client-side features
+ */
+export function ClientInitializer() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Skip smooth scrolling on mobile or if animations are disabled
+    // Skip animations on mobile or if user prefers reduced motion
     if (shouldDisableAnimations()) {
-      console.log("Smooth scrolling disabled for mobile/reduced motion");
+      console.log("Animations disabled for mobile/reduced motion");
       return;
     }
 
@@ -32,10 +35,6 @@ export function SmoothScrollWrapper({ children }: { children: React.ReactNode })
       limitCallbacks: true,
     });
 
-    // Don't normalize scroll - let each page handle its own scrolling
-    // This prevents conflicts with internal scrolling layouts like resources/github
-    // ScrollTrigger.normalizeScroll(true);
-
     // Refresh ScrollTrigger after initialization
     const timeoutId = setTimeout(() => {
       ScrollTrigger.refresh();
@@ -44,11 +43,10 @@ export function SmoothScrollWrapper({ children }: { children: React.ReactNode })
     // Cleanup function
     return () => {
       clearTimeout(timeoutId);
-      // Kill all ScrollTrigger instances on unmount
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
 
-  return <>{children}</>;
+  // This component renders nothing
+  return null;
 }
 

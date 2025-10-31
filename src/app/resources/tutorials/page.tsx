@@ -1,13 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { IoHomeOutline, IoChevronForwardOutline, IoFilterOutline, IoSearchOutline } from "react-icons/io5";
-import { useResources } from "../resources-context";
+import { IoHomeOutline, IoChevronForwardOutline, IoSearchOutline, IoMenuOutline, IoCloseOutline } from "react-icons/io5";
+import { ResourcesMobileMenu } from "@/src/components/pages/resources/resources-mobile-menu";
 
 export default function TutorialsPage() {
-  const { toggleSidebar } = useResources();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
+    <>
     <main className="resources-content flex-1 min-w-0 h-full overflow-y-auto overflow-x-hidden">
         <div className="breadcrumb-section border-b bg-muted/5">
           <div className="w-full px-4 py-4">
@@ -22,9 +24,18 @@ export default function TutorialsPage() {
                 <IoChevronForwardOutline className="h-3 w-3 text-muted-foreground" />
                 <span className="font-medium text-foreground">Tutorials</span>
               </div>
-              <button onClick={toggleSidebar} className="lg:hidden flex items-center gap-2 px-3 py-1.5 text-sm font-medium border rounded-sm hover:bg-accent transition-colors">
-                <IoFilterOutline className="h-4 w-4" />
-                <span>Filter</span>
+              <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="lg:hidden flex items-center gap-2 px-3 py-1.5 text-sm font-medium border rounded-sm hover:bg-accent transition-colors">
+                {mobileMenuOpen ? (
+                  <>
+                    <IoCloseOutline className="h-4 w-4" />
+                    <span>Close</span>
+                  </>
+                ) : (
+                  <>
+                    <IoMenuOutline className="h-4 w-4" />
+                    <span>Menu</span>
+                  </>
+                )}
               </button>
             </div>
             <p className="text-xs text-muted-foreground">Step-by-step guides and hands-on tutorials</p>
@@ -47,6 +58,9 @@ export default function TutorialsPage() {
           </div>
         </div>
     </main>
+
+      <ResourcesMobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+    </>
   );
 }
 

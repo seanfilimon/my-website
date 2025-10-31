@@ -9,11 +9,12 @@ import {
   IoArrowForwardOutline,
   IoTimeOutline,
   IoSearchOutline,
-  IoFilterOutline,
   IoHomeOutline,
-  IoChevronForwardOutline
+  IoChevronForwardOutline,
+  IoMenuOutline,
+  IoCloseOutline
 } from "react-icons/io5";
-import { useResources } from "../resources-context";
+import { ResourcesMobileMenu } from "@/src/components/pages/resources/resources-mobile-menu";
 
 // Sample articles data
 const articles = [
@@ -118,10 +119,10 @@ const articles = [
 const categories = ["All", "Framework", "Language", "Backend", "Frontend", "Database", "Security"];
 
 export default function ArticlesPage() {
-  const { toggleSidebar } = useResources();
   const sectionRef = useRef<HTMLDivElement>(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Filter articles
   const filteredArticles = articles.filter(article => {
@@ -212,6 +213,7 @@ export default function ArticlesPage() {
   }, [selectedCategory, searchTerm]);
 
   return (
+    <>
     <main ref={sectionRef} className="resources-content flex-1 min-w-0 h-full overflow-y-auto overflow-x-hidden">
         {/* Breadcrumb Section */}
         <div className="breadcrumb-section border-b bg-muted/5">
@@ -237,11 +239,20 @@ export default function ArticlesPage() {
               </div>
               
               <button
-                onClick={toggleSidebar}
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="lg:hidden flex items-center gap-2 px-3 py-1.5 text-sm font-medium border rounded-sm hover:bg-accent transition-colors"
               >
-                <IoFilterOutline className="h-4 w-4" />
-                <span>Filter</span>
+                {mobileMenuOpen ? (
+                  <>
+                    <IoCloseOutline className="h-4 w-4" />
+                    <span>Close</span>
+                  </>
+                ) : (
+                  <>
+                    <IoMenuOutline className="h-4 w-4" />
+                    <span>Menu</span>
+                  </>
+                )}
               </button>
             </div>
             <p className="text-xs text-muted-foreground">
@@ -370,6 +381,9 @@ export default function ArticlesPage() {
           )}
         </div>
     </main>
+
+      <ResourcesMobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+    </>
   );
 }
 

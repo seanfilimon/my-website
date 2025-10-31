@@ -7,8 +7,8 @@ import { NewsletterSection } from "@/src/components/pages/landing/newsletter-sec
 export function ConditionalFooter() {
   const pathname = usePathname();
   
-  // Don't show footer/newsletter on resources or github pages
-  if (pathname && (pathname.startsWith("/resources") || pathname.startsWith("/github"))) {
+  // Don't show footer/newsletter on resources, github, or admin pages
+  if (pathname && (pathname.startsWith("/resources") || pathname.startsWith("/github") || pathname.startsWith("/admin"))) {
     return null;
   }
   

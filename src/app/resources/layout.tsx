@@ -23,8 +23,8 @@ export default function ResourcesLayout({
 
           {/* Content Area */}
           <div className="flex-1 min-w-0 h-full">
-            {children}
-          </div>
+      {children}
+    </div>
         </div>
       </div>
     </ResourcesProvider>

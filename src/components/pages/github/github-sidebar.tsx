@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import {
   IoSearchOutline,
   IoChevronDownOutline,
@@ -38,7 +38,6 @@ export function GitHubSidebar({
   stats
 }: GitHubSidebarProps) {
   const containerRef = useRef<HTMLElement>(null);
-  const [hoveredRepo, setHoveredRepo] = useState<string | null>(null);
 
   return (
     <aside 
@@ -131,8 +130,6 @@ export function GitHubSidebar({
                         <a
                           key={repoName}
                           href={`#${repoName}`}
-                          onMouseEnter={() => setHoveredRepo(repoName)}
-                          onMouseLeave={() => setHoveredRepo(null)}
                           className="relative flex items-center gap-2 px-2 py-1.5 rounded-sm hover:bg-accent transition-all group select-none text-sm"
                         >
                           <IoCodeSlashOutline className="h-3.5 w-3.5 text-muted-foreground shrink-0" />

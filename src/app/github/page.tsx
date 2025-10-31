@@ -8,7 +8,11 @@ import { Button } from "@/components/ui/button";
 import {
   IoLogoGithub,
   IoHomeOutline,
-  IoChevronForwardOutline
+  IoChevronForwardOutline,
+  IoMenuOutline,
+  IoCloseOutline,
+  IoSearchOutline,
+  IoChevronDownOutline
 } from "react-icons/io5";
 import { GitHubSidebar, CompactRepoCard, repositories, techCategories, ContributionGraph, generateYearData } from "@/src/components/pages/github";
 
@@ -18,6 +22,9 @@ export default function GitHubPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<string[]>(["Next.js"]);
   const [yearData] = useState(() => generateYearData());
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileSearchQuery, setMobileSearchQuery] = useState("");
+  const [expandedMobileCategories, setExpandedMobileCategories] = useState<string[]>(["Next.js"]);
 
   const toggleCategory = (category: string) => {
     setExpandedCategories(prev =>
@@ -158,11 +165,20 @@ export default function GitHubPage() {
               </div>
               
               <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="lg:hidden flex items-center gap-2 px-3 py-1.5 text-sm font-medium border rounded-sm hover:bg-accent transition-colors"
               >
-                <IoLogoGithub className="h-4 w-4" />
-                <span>Browse</span>
+                {mobileMenuOpen ? (
+                  <>
+                    <IoCloseOutline className="h-4 w-4" />
+                    <span>Close</span>
+                  </>
+                ) : (
+                  <>
+                    <IoMenuOutline className="h-4 w-4" />
+                    <span>Menu</span>
+                  </>
+                )}
               </button>
             </div>
             <p className="text-xs text-muted-foreground">
@@ -243,6 +259,112 @@ export default function GitHubPage() {
           </div>
         </section>
       </main>
+
+      {/* Full Page Mobile Menu */}
+      {mobileMenuOpen && (
+        <>
+          <div 
+            className="fixed inset-0 bg-black/80 z-40 lg:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="fixed inset-0 top-16 bg-background z-50 lg:hidden overflow-y-auto">
+            <div className="flex flex-col h-full">
+              {/* Header with Close Button */}
+              <div className="flex items-center justify-between p-4 border-b shrink-0">
+                <h2 className="text-lg font-semibold">Browse Repositories</h2>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-center h-10 w-10 rounded-sm hover:bg-accent transition-colors"
+                  aria-label="Close menu"
+                >
+                  <IoCloseOutline className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                {/* Search Bar */}
+                <div className="relative">
+                  <IoSearchOutline className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <input
+                    type="search"
+                    placeholder="Search repositories..."
+                    value={mobileSearchQuery}
+                    onChange={(e) => setMobileSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 text-base rounded-lg border border-border bg-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                  />
+                </div>
+
+                {/* Collapsible Tech Categories */}
+                <div className="space-y-2">
+                  {techCategories.map((category) => {
+                    const isExpanded = expandedMobileCategories.includes(category.category);
+                    const categoryRepos = repositories.filter(repo => 
+                      repo.tech.some(tech => category.tech.includes(tech))
+                    );
+                    
+                    return (
+                      <div key={category.category} className="border rounded-lg overflow-hidden">
+                        {/* Category Header */}
+                        <button
+                          onClick={() => {
+                            setExpandedMobileCategories(prev =>
+                              prev.includes(category.category)
+                                ? prev.filter(c => c !== category.category)
+                                : [...prev, category.category]
+                            );
+                          }}
+                          className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div 
+                              className="flex items-center justify-center h-8 w-8 rounded text-lg"
+                              style={{ backgroundColor: `${category.color}20`, color: category.color }}
+                            >
+                              {category.icon}
+                            </div>
+                            <span className="font-semibold">{category.category}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground px-2 py-1 rounded bg-muted">
+                              {categoryRepos.length}
+                            </span>
+                            <IoChevronDownOutline 
+                              className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
+                                isExpanded ? 'rotate-180' : ''
+                              }`}
+                            />
+                          </div>
+                        </button>
+
+                        {/* Category Repos */}
+                        {isExpanded && (
+                          <div className="space-y-1 p-2 bg-muted/20">
+                            {categoryRepos.map((repo) => (
+                              <a
+                                key={repo.id}
+                                href={`#${repo.name}`}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
+                              >
+                                <div className="flex-1">
+                                  <div className="font-medium">{repo.name}</div>
+                                  <div className="text-xs text-muted-foreground line-clamp-1">
+                                    {repo.description}
+                                  </div>
+                                </div>
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

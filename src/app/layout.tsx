@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Ubuntu, Ubuntu_Mono } from "next/font/google";
 import "./globals.css";
 import { UnifiedNavbar } from "@/src/components/navigation/unified-navbar";
-import { SmoothScrollWrapper } from "@/src/components/wrappers/smooth-scroll-wrapper";
 import { ConditionalFooter } from "@/src/components/layouts/conditional-footer";
 import { ConditionalContainer } from "@/src/components/layouts/conditional-container";
+import { ClientInitializer } from "@/src/components/wrappers/client-initializer";
 
 const ubuntu = Ubuntu({
   variable: "--font-ubuntu",
@@ -33,15 +33,14 @@ export default function RootLayout({
       <body
         className={`${ubuntu.variable} ${ubuntuMono.variable} font-sans antialiased`}
       >
-        <SmoothScrollWrapper>
-          <UnifiedNavbar />
-          <main className="pt-16 min-h-screen">
-            <ConditionalContainer>
-              {children}
-            </ConditionalContainer>
-          </main>
-          <ConditionalFooter />
-        </SmoothScrollWrapper>
+        <ClientInitializer />
+        <UnifiedNavbar />
+        <main className="pt-16 min-h-screen">
+          <ConditionalContainer>
+            {children}
+          </ConditionalContainer>
+        </main>
+        <ConditionalFooter />
       </body>
     </html>
   );

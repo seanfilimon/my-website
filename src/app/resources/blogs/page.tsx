@@ -8,14 +8,15 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { 
   IoHomeOutline, 
   IoChevronForwardOutline, 
-  IoFilterOutline, 
   IoSearchOutline,
   IoArrowForwardOutline,
   IoTimeOutline,
   IoHeartOutline,
-  IoChatbubbleOutline
+  IoChatbubbleOutline,
+  IoMenuOutline,
+  IoCloseOutline
 } from "react-icons/io5";
-import { useResources } from "../resources-context";
+import { ResourcesMobileMenu } from "@/src/components/pages/resources/resources-mobile-menu";
 
 // Sample blog posts data
 const blogs = [
@@ -152,10 +153,10 @@ const blogs = [
 const categories = ["All", "Entrepreneurship", "Development", "Productivity", "Tools", "Updates", "Learning"];
 
 export default function BlogsPage() {
-  const { toggleSidebar } = useResources();
   const sectionRef = useRef<HTMLDivElement>(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Filter blogs
   const filteredBlogs = blogs.filter(blog => {
@@ -246,6 +247,7 @@ export default function BlogsPage() {
   }, [selectedCategory, searchTerm]);
 
   return (
+    <>
     <main ref={sectionRef} className="resources-content flex-1 min-w-0 h-full overflow-y-auto overflow-x-hidden">
         {/* Breadcrumb Section */}
         <div className="breadcrumb-section border-b bg-muted/5">
@@ -261,9 +263,18 @@ export default function BlogsPage() {
                 <IoChevronForwardOutline className="h-3 w-3 text-muted-foreground" />
                 <span className="font-medium text-foreground">Blogs</span>
               </div>
-              <button onClick={toggleSidebar} className="lg:hidden flex items-center gap-2 px-3 py-1.5 text-sm font-medium border rounded-sm hover:bg-accent transition-colors">
-                <IoFilterOutline className="h-4 w-4" />
-                <span>Filter</span>
+              <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="lg:hidden flex items-center gap-2 px-3 py-1.5 text-sm font-medium border rounded-sm hover:bg-accent transition-colors">
+                {mobileMenuOpen ? (
+                  <>
+                    <IoCloseOutline className="h-4 w-4" />
+                    <span>Close</span>
+                  </>
+                ) : (
+                  <>
+                    <IoMenuOutline className="h-4 w-4" />
+                    <span>Menu</span>
+                  </>
+                )}
               </button>
             </div>
             <p className="text-xs text-muted-foreground">Personal insights, opinions, and thoughts on web development</p>
@@ -402,6 +413,9 @@ export default function BlogsPage() {
           )}
         </div>
     </main>
+
+      <ResourcesMobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+    </>
   );
 }
 
