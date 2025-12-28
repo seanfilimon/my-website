@@ -1,32 +1,26 @@
-"use client";
+import { caller } from "@/src/lib/trpc/server";
+import { ResourcesLayoutClient } from "./resources-layout-client";
 
-import { useState } from "react";
-import { ResourcesSidebarWrapper } from "@/src/components/pages/resources/resources-sidebar-wrapper";
-import { ResourcesProvider } from "./resources-context";
+async function getSidebarData() {
+  try {
+    const sidebarData = await caller.resource.getForSidebar();
+    return sidebarData;
+  } catch (error) {
+    console.error("Error fetching sidebar data:", error);
+    return [];
+  }
+}
 
-export default function ResourcesLayout({
+export default async function ResourcesLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const sidebarData = await getSidebarData();
 
   return (
-    <ResourcesProvider toggleSidebar={() => setSidebarOpen(!sidebarOpen)}>
-      <div className="h-[calc(100vh-4rem)] w-full overflow-hidden bg-background">
-        <div className="flex w-full h-full overflow-hidden">
-          {/* Sidebar Wrapper */}
-          <ResourcesSidebarWrapper 
-            sidebarOpen={sidebarOpen}
-            onToggle={() => setSidebarOpen(!sidebarOpen)}
-          />
-
-          {/* Content Area */}
-          <div className="flex-1 min-w-0 h-full">
+    <ResourcesLayoutClient sidebarData={sidebarData}>
       {children}
-    </div>
-        </div>
-      </div>
-    </ResourcesProvider>
+    </ResourcesLayoutClient>
   );
 }

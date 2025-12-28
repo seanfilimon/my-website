@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -10,8 +10,7 @@ import {
   IoSearchOutline,
   IoFunnelOutline,
   IoChevronDownOutline,
-  IoLogoTwitter,
-  IoLogoLinkedin
+  IoGlobeOutline,
 } from "react-icons/io5";
 import {
   DropdownMenu,
@@ -19,206 +18,149 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { trpc } from "@/src/lib/trpc/client";
 
-const allTags = [
-  // Categories
-  "Companies", "Software", "Designs", "Libraries", "Boilerplates",
-  // Technologies
-  "Next.js", "React", "TypeScript", "Node.js", "Stripe", 
-  "AI", "DevOps", "SaaS", "Education", "CLI", "Security",
-  "Performance", "Analytics", "MVP", "Storybook", "A11y",
-  "WebRTC", "AWS", "Figma", "UI/UX"
-];
+// Map Experience types to portfolio categories
+const TYPE_TO_CATEGORY: Record<string, string> = {
+  WORK: "Companies",
+  PROJECT: "Projects",
+};
 
-const projects = [
-  {
-    id: 1,
-    title: "TechFlow",
-    category: "Companies",
-    description: "Developer workflow platform with AI-powered code reviews and automated deployment pipelines. Currently at $2M ARR.",
-    image: "/bg-pattern.png",
-    logo: "/face_grayscale_nobg.png", // Company logo
-    website: "techflow.dev",
-    tags: ["Next.js", "TypeScript", "Stripe", "AI", "DevOps"],
-    stats: {
-      users: "15K+",
-      revenue: "$2M ARR"
-    },
+// Transform Experience data to portfolio card format
+interface PortfolioProject {
+  id: string;
+  title: string;
+  category: string;
+  description: string;
+  image: string;
+  logo?: string | null;
+  website?: string;
+  tags: string[];
+  stats: Record<string, string>;
+  links: {
+    live?: string | null;
+    github?: string | null;
+    case_study: string;
+  };
+  featured: boolean;
+  slug: string;
+}
+
+function transformExperienceToProject(exp: any): PortfolioProject {
+  // Extract website from organizationUrl or projectUrl
+  const websiteUrl = exp.organizationUrl || exp.projectUrl;
+  const website = websiteUrl?.replace(/^https?:\/\//, "").replace(/\/$/, "");
+
+  // Combine technologies and tags
+  const tags = [
+    ...(exp.technologies?.map((t: any) => t.name) || []),
+    ...(exp.tags?.map((t: any) => t.name) || []),
+  ];
+
+  // Convert metrics to stats object
+  const stats: Record<string, string> = {};
+  exp.metrics?.forEach((m: any) => {
+    stats[m.label.toLowerCase().replace(/\s+/g, "_")] = m.value;
+  });
+
+  return {
+    id: exp.id,
+    title: exp.title,
+    category: TYPE_TO_CATEGORY[exp.type] || exp.type,
+    description: exp.summary || exp.description?.slice(0, 200) || "",
+    image: exp.thumbnail || exp.coverImage || "/bg-pattern.png",
+    logo: exp.organizationLogo,
+    website,
+    tags,
+    stats,
     links: {
-      live: "https://techflow.dev",
-      case_study: "/case-studies/techflow",
-      twitter: "https://twitter.com/techflowdev",
-      linkedin: "https://linkedin.com/company/techflow"
+      live: exp.projectUrl || exp.demoUrl || exp.organizationUrl,
+      github: exp.githubUrl,
+      case_study: `/portfolio/experience/${exp.slug}`,
     },
-    featured: true
-  },
-  {
-    id: 2,
-    title: "React UI Pro",
-    category: "Libraries",
-    description: "Production-ready React component library with TypeScript, accessibility, and comprehensive documentation.",
-    image: "/bg-pattern.png",
-    tags: ["React", "TypeScript", "Storybook", "A11y"],
-    stats: {
-      stars: "2.4K",
-      downloads: "50K+"
-    },
-    links: {
-      github: "https://github.com/seanfilimon/react-ui-pro",
-      live: "https://react-ui-pro.dev"
-    },
-    featured: true
-  },
-  {
-    id: 3,
-    title: "SaaS Starter Kit",
-    category: "Boilerplates",
-    description: "Complete Next.js SaaS boilerplate with auth, payments, dashboard, and deployment ready setup.",
-    image: "/bg-pattern.png",
-    tags: ["Next.js", "TypeScript", "Stripe", "Prisma"],
-    stats: {
-      downloads: "25K+",
-      stars: "1.8K"
-    },
-    links: {
-      github: "https://github.com/seanfilimon/saas-starter",
-      live: "https://saas-starter-demo.com"
-    },
-    featured: true
-  },
-  {
-    id: 4,
-    title: "Brand Identity System",
-    category: "Designs",
-    description: "Complete brand identity and design system for TechFlow including logo, colors, typography, and components.",
-    image: "/bg-pattern.png",
-    tags: ["Figma", "UI/UX", "Design System", "Branding"],
-    stats: {
-      components: "150+",
-      variants: "500+"
-    },
-    links: {
-      live: "https://design.techflow.dev",
-      case_study: "/designs/techflow-brand"
-    },
-    featured: false
-  },
-  {
-    id: 5,
-    title: "DevTools CLI Suite",
-    category: "Software",
-    description: "Command-line tools for developers including code analysis, project scaffolding, and deployment utilities.",
-    image: "/bg-pattern.png",
-    tags: ["CLI", "Node.js", "TypeScript", "DevOps"],
-    stats: {
-      downloads: "100K+",
-      tools: "12"
-    },
-    links: {
-      github: "https://github.com/seanfilimon/devtools-cli",
-      docs: "/docs/devtools"
-    },
-    featured: false
-  },
-  {
-    id: 6,
-    title: "LegionEdge",
-    category: "Companies",
-    description: "Next-generation development platform combining AI-powered code generation with collaborative team tools. Currently in Series A.",
-    image: "/bg-pattern.png",
-    logo: "/face_grayscale_nobg.png",
-    website: "legionedge.ai",
-    tags: ["AI", "Next.js", "TypeScript", "SaaS", "DevOps"],
-    stats: {
-      users: "25K+",
-      funding: "Series A"
-    },
-    links: {
-      live: "https://legionedge.ai",
-      case_study: "/case-studies/legionedge",
-      twitter: "https://twitter.com/legionedgeai",
-      linkedin: "https://linkedin.com/company/legionedge"
-    },
-    featured: true
-  },
-  {
-    id: 7,
-    title: "Cezium Software",
-    category: "Companies",
-    description: "Enterprise software solutions specializing in scalable web applications and cloud infrastructure for Fortune 500 companies.",
-    image: "/bg-pattern.png",
-    logo: "/me.png",
-    website: "cezium.com",
-    tags: ["Enterprise", "Cloud", "AWS", "React", "Node.js"],
-    stats: {
-      clients: "50+",
-      revenue: "$10M+"
-    },
-    links: {
-      live: "https://cezium.com",
-      case_study: "/case-studies/cezium",
-      linkedin: "https://linkedin.com/company/cezium-software"
-    },
-    featured: false
-  },
-  {
-    id: 8,
-    title: "OpticEngine Inc",
-    category: "Companies",
-    description: "Computer vision and AI company building advanced image processing solutions for autonomous systems and robotics.",
-    image: "/bg-pattern.png",
-    logo: "/face_grayscale_nobg.png",
-    website: "opticengine.com",
-    tags: ["AI", "Computer Vision", "Python", "Machine Learning", "Robotics"],
-    stats: {
-      patents: "12",
-      partnerships: "8"
-    },
-    links: {
-      live: "https://opticengine.com",
-      case_study: "/case-studies/opticengine",
-      twitter: "https://twitter.com/opticengine",
-      linkedin: "https://linkedin.com/company/opticengine"
-    },
-    featured: false
-  },
-  {
-    id: 9,
-    title: "E-Commerce Starter",
-    category: "Boilerplates",
-    description: "Full-featured e-commerce boilerplate with cart, payments, admin panel, and inventory management.",
-    image: "/bg-pattern.png",
-    tags: ["Next.js", "Stripe", "Prisma", "Analytics"],
-    stats: {
-      stores: "200+",
-      revenue: "$5M+ GMV"
-    },
-    links: {
-      github: "https://github.com/seanfilimon/ecommerce-starter",
-      live: "https://ecommerce-demo.dev"
-    },
-    featured: false
-  }
-];
+    featured: exp.featured,
+    slug: exp.slug,
+  };
+}
+
+// Loading skeleton for project cards
+function ProjectCardSkeleton() {
+  return (
+    <div className="flex w-full flex-col gap-3">
+      <Skeleton className="aspect-video w-full rounded-lg" />
+      <div className="flex flex-col gap-2 pl-1">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-5 w-5 rounded-full" />
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-5 w-20 ml-auto" />
+        </div>
+        <Skeleton className="h-3 w-48" />
+        <div className="flex gap-1.5 mt-1">
+          <Skeleton className="h-5 w-5 rounded-full" />
+          <Skeleton className="h-4 w-4 rounded-full" />
+          <Skeleton className="h-4 w-4 rounded-full" />
+          <Skeleton className="h-4 w-4 rounded-full" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function PortfolioContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const portfolioRef = useRef<HTMLDivElement>(null);
 
-  const filteredProjects = projects.filter(project => {
-    const matchesSearch = searchQuery === "" || 
-      project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTags = selectedTags.length === 0 || 
-      selectedTags.some(tag => 
-        project.tags.includes(tag) || project.category === tag
-      );
-    
-    return matchesSearch && matchesTags;
+  // Fetch experiences from database
+  const { data, isLoading, error } = trpc.experience.list.useQuery({
+    published: true,
+    limit: 100,
+    orderBy: "order",
+    order: "asc",
   });
 
-  // No scroll animations - keep it simple
+  // Filter for portfolio types (WORK and PROJECT only)
+  const portfolioExperiences = useMemo(() => {
+    if (!data?.experiences) return [];
+    return data.experiences.filter(
+      (exp) => exp.type === "WORK" || exp.type === "PROJECT"
+    );
+  }, [data?.experiences]);
+
+  // Transform experiences to project format
+  const projects = useMemo(() => {
+    return portfolioExperiences.map(transformExperienceToProject);
+  }, [portfolioExperiences]);
+
+  // Derive all tags from experiences
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    // Add categories first
+    tagSet.add("Companies");
+    tagSet.add("Projects");
+    // Add all technologies and tags from experiences
+    portfolioExperiences.forEach((exp) => {
+      exp.technologies?.forEach((t: any) => tagSet.add(t.name));
+      exp.tags?.forEach((t: any) => tagSet.add(t.name));
+    });
+    return Array.from(tagSet);
+  }, [portfolioExperiences]);
+
+  // Filter projects based on search and tags
+  const filteredProjects = useMemo(() => {
+    return projects.filter(project => {
+      const matchesSearch = searchQuery === "" || 
+        project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        project.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesTags = selectedTags.length === 0 || 
+        selectedTags.some(tag => 
+          project.tags.includes(tag) || project.category === tag
+        );
+      
+      return matchesSearch && matchesTags;
+    });
+  }, [projects, searchQuery, selectedTags]);
 
   return (
     <div ref={portfolioRef} className="py-20">
@@ -248,7 +190,7 @@ export function PortfolioContent() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="rounded-sm gap-2 min-w-48">
+              <Button variant="outline" className="rounded-sm gap-2 min-w-48" disabled={isLoading}>
                 <IoFunnelOutline className="h-4 w-4" />
                 <span>Filter by Category & Tags</span>
                 {selectedTags.length > 0 && (
@@ -297,209 +239,237 @@ export function PortfolioContent() {
           </DropdownMenu>
 
           <div className="text-sm text-muted-foreground">
-            {filteredProjects.length} project{filteredProjects.length !== 1 ? 's' : ''}
+            {isLoading ? (
+              <Skeleton className="h-4 w-20" />
+            ) : (
+              `${filteredProjects.length} project${filteredProjects.length !== 1 ? 's' : ''}`
+            )}
           </div>
         </div>
       </div>
 
-      {/* Projects Grid - Clean Cards */}
+      {/* Projects Grid */}
       <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {filteredProjects.map((project) => (
-            <div
-              key={project.id}
-              className="project-card group relative flex w-full flex-col gap-3 text-sm cursor-pointer select-none"
-            >
-              {/* Thumbnail */}
-              <div className="relative aspect-video w-full overflow-hidden rounded-lg border hover:shadow-sm transition-all duration-300 bg-muted/20">
-                <Image
-                  src={project.image}
-                  alt={`${project.title} preview`}
-                  fill
-                  className="object-cover transition-all duration-300"
-                />
+        {/* Loading State */}
+        {isLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {[...Array(6)].map((_, i) => (
+              <ProjectCardSkeleton key={i} />
+            ))}
+          </div>
+        )}
 
-                {/* Featured Badge - Above Blur */}
-                {project.featured && (
-                  <div className="absolute top-2 left-2 z-20">
-                    <span className="px-2 py-1 text-xs font-medium bg-primary text-primary-foreground rounded-md shadow-lg">
-                      Featured
-                    </span>
-                  </div>
-                )}
-
-                {/* Hover Overlay */}
-                <div className="absolute inset-0 p-3 flex flex-col justify-between items-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 bg-background/80 backdrop-blur-sm">
-                  {/* Top Row - Quick Actions */}
-                  <div className="self-stretch flex justify-end items-start gap-1.5">
-                    {/* Social Links for Companies */}
-                    {project.category === "Companies" && project.links.twitter && (
-                      <Button
-                        asChild
-                        size="sm"
-                        className="h-8 w-8 p-0 rounded-md bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
-                      >
-                        <Link href={project.links.twitter} target="_blank">
-                          <IoLogoTwitter className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                    )}
-                    
-                    {project.category === "Companies" && project.links.linkedin && (
-                      <Button
-                        asChild
-                        size="sm"
-                        className="h-8 w-8 p-0 rounded-md bg-blue-600 hover:bg-blue-700 text-white shadow-md transition-all duration-200"
-                      >
-                        <Link href={project.links.linkedin} target="_blank">
-                          <IoLogoLinkedin className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                    )}
-
-                    <Button
-                      asChild
-                      size="sm"
-                      className="h-8 w-8 p-0 rounded-md bg-background/90 hover:bg-background border shadow-md transition-all duration-200"
-                    >
-                      <Link href={project.links.case_study || project.links.live || "#"}>
-                        <IoArrowForwardOutline className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                    
-                    {project.links.github && (
-                      <Button
-                        asChild
-                        size="sm"
-                        className="h-8 w-8 p-0 rounded-md bg-foreground hover:bg-foreground/80 text-background shadow-md transition-all duration-200"
-                      >
-                        <Link href={project.links.github} target="_blank">
-                          <IoLogoGithub className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                    )}
-                  </div>
-
-                  {/* Bottom Row - Main Action */}
-                  <div className="w-full flex justify-center">
-                    <Button
-                      asChild
-                      className="rounded-lg flex items-center gap-2 shadow-lg font-bold text-black dark:text-black bg-primary hover:bg-primary/90"
-                    >
-                      <Link href={project.links.live || project.links.case_study || "#"}>
-                        <span>
-                          {project.category === "Companies" ? "View Website" : 
-                           project.links.case_study ? "View Case Study" : "View Project"}
-                        </span>
-                        <IoArrowForwardOutline className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="flex items-center gap-3 pb-1 pl-1">
-                <div className="flex flex-1 flex-col gap-2">
-                  {/* Title and Category */}
-                  <div className="flex items-center gap-2">
-                    {/* Company Logo */}
-                    {project.category === "Companies" && project.logo && (
-                      <div className="relative h-5 w-5 overflow-hidden rounded-full shrink-0">
-                        <Image
-                          src={project.logo}
-                          alt={`${project.title} logo`}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    )}
-                    
-                    <span className="line-clamp-1 font-medium leading-none transition-colors duration-300 select-none">
-                      {project.title}
-                    </span>
-                    
-                    {/* Category Badge */}
-                    <div className="px-2 py-0.5 rounded bg-accent flex items-center justify-center flex-shrink-0 ml-auto select-none">
-                      <span className="text-xs font-medium text-accent-foreground">
-                        {project.category}
-                      </span>
-                    </div>
-                    
-                    {project.featured && (
-                      <div className="px-2 py-0.5 rounded text-xs font-medium flex-shrink-0 select-none bg-primary/10 text-primary">
-                        FEATURED
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Stats and Website */}
-                  <div className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
-                    <span className="truncate whitespace-nowrap leading-none select-none">
-                      {project.category === "Companies" && project.website ? (
-                        <>
-                          <span className="text-primary font-medium">{project.website}</span>
-                          {Object.keys(project.stats).length > 0 && (
-                            <>
-                              <span className="mx-1">•</span>
-                              {Object.entries(project.stats).map(([key, value]) => `${value} ${key.replace('_', ' ')}`).join(' • ')}
-                            </>
-                          )}
-                        </>
-                      ) : (
-                        Object.entries(project.stats).map(([key, value]) => `${value} ${key.replace('_', ' ')}`).join(' • ')
-                      )}
-                    </span>
-                  </div>
-
-                  {/* Technology Icons */}
-                  <div className="flex items-center gap-1.5 mt-1">
-                    {project.tags.slice(0, 4).map((tech: string, index: number) => {
-                      const size = index === 0 ? 22 : 18;
-                      
-                      return (
-                        <div 
-                          key={index} 
-                          className="transition-all duration-300 rounded-full flex items-center justify-center bg-accent"
-                          style={{ width: size, height: size }}
-                        >
-                          <span 
-                            className="text-accent-foreground font-medium select-none"
-                            style={{ fontSize: index === 0 ? '10px' : '8px' }}
-                          >
-                            {tech.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                      );
-                    })}
-                    {project.tags.length > 4 && (
-                      <span className="text-xs text-muted-foreground ml-1">
-                        +{project.tags.length - 4}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {filteredProjects.length === 0 && (
+        {/* Error State */}
+        {error && (
           <div className="text-center py-16">
-            <p className="text-muted-foreground">
-              No projects found matching your criteria.
+            <p className="text-destructive mb-4">
+              Failed to load portfolio items. Please try again later.
             </p>
             <Button 
-              onClick={() => {
-                setSelectedTags([]);
-                setSearchQuery("");
-              }}
+              onClick={() => window.location.reload()}
               variant="outline"
-              className="mt-4 rounded-sm"
+              className="rounded-sm"
             >
-              Clear Filters
+              Retry
             </Button>
+          </div>
+        )}
+
+        {/* Projects Grid - Clean Cards */}
+        {!isLoading && !error && (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {filteredProjects.map((project) => (
+              <div
+                key={project.id}
+                className="project-card group relative flex w-full flex-col gap-3 text-sm cursor-pointer select-none"
+              >
+                {/* Thumbnail */}
+                <div className="relative aspect-video w-full overflow-hidden rounded-lg border hover:shadow-sm transition-all duration-300 bg-muted/20">
+                  <Image
+                    src={project.image}
+                    alt={`${project.title} preview`}
+                    fill
+                    className="object-cover transition-all duration-300"
+                  />
+
+                  {/* Featured Badge - Above Blur */}
+                  {project.featured && (
+                    <div className="absolute top-2 left-2 z-20">
+                      <span className="px-2 py-1 text-xs font-medium bg-primary text-primary-foreground rounded-md shadow-lg">
+                        Featured
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 p-3 flex flex-col justify-between items-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 bg-background/80 backdrop-blur-sm">
+                    {/* Top Row - Quick Actions */}
+                    <div className="self-stretch flex justify-end items-start gap-1.5">
+                      {/* View Details Button */}
+                      <Button
+                        asChild
+                        size="sm"
+                        className="h-8 w-8 p-0 rounded-md bg-background/90 hover:bg-background border shadow-md transition-all duration-200"
+                      >
+                        <Link href={project.links.case_study}>
+                          <IoArrowForwardOutline className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                      
+                      {/* GitHub Link */}
+                      {project.links.github && (
+                        <Button
+                          asChild
+                          size="sm"
+                          className="h-8 w-8 p-0 rounded-md bg-foreground hover:bg-foreground/80 text-background shadow-md transition-all duration-200"
+                        >
+                          <Link href={project.links.github} target="_blank">
+                            <IoLogoGithub className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      )}
+
+                      {/* Live Site Link */}
+                      {project.links.live && (
+                        <Button
+                          asChild
+                          size="sm"
+                          className="h-8 w-8 p-0 rounded-md bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
+                        >
+                          <Link href={project.links.live} target="_blank">
+                            <IoGlobeOutline className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Bottom Row - Main Action */}
+                    <div className="w-full flex justify-center">
+                      <Button
+                        asChild
+                        className="rounded-lg flex items-center gap-2 shadow-lg font-bold text-black dark:text-black bg-primary hover:bg-primary/90"
+                      >
+                        <Link href={project.links.case_study}>
+                          <span>View Details</span>
+                          <IoArrowForwardOutline className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="flex items-center gap-3 pb-1 pl-1">
+                  <div className="flex flex-1 flex-col gap-2">
+                    {/* Title and Category */}
+                    <div className="flex items-center gap-2">
+                      {/* Company Logo */}
+                      {project.category === "Companies" && project.logo && (
+                        <div className="relative h-5 w-5 overflow-hidden rounded-full shrink-0">
+                          <Image
+                            src={project.logo}
+                            alt={`${project.title} logo`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                      
+                      <span className="line-clamp-1 font-medium leading-none transition-colors duration-300 select-none">
+                        {project.title}
+                      </span>
+                      
+                      {/* Category Badge */}
+                      <div className="px-2 py-0.5 rounded bg-accent flex items-center justify-center shrink-0 ml-auto select-none">
+                        <span className="text-xs font-medium text-accent-foreground">
+                          {project.category}
+                        </span>
+                      </div>
+                      
+                      {project.featured && (
+                        <div className="px-2 py-0.5 rounded text-xs font-medium shrink-0 select-none bg-primary/10 text-primary">
+                          FEATURED
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Stats and Website */}
+                    <div className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+                      <span className="truncate whitespace-nowrap leading-none select-none">
+                        {project.category === "Companies" && project.website ? (
+                          <>
+                            <span className="text-primary font-medium">{project.website}</span>
+                            {Object.keys(project.stats).length > 0 && (
+                              <>
+                                <span className="mx-1">•</span>
+                                {Object.entries(project.stats).map(([key, value]) => `${value} ${key.replace('_', ' ')}`).join(' • ')}
+                              </>
+                            )}
+                          </>
+                        ) : Object.keys(project.stats).length > 0 ? (
+                          Object.entries(project.stats).map(([key, value]) => `${value} ${key.replace('_', ' ')}`).join(' • ')
+                        ) : (
+                          <span className="text-muted-foreground/60">No stats available</span>
+                        )}
+                      </span>
+                    </div>
+
+                    {/* Technology Icons */}
+                    {project.tags.length > 0 && (
+                      <div className="flex items-center gap-1.5 mt-1">
+                        {project.tags.slice(0, 4).map((tech: string, index: number) => {
+                          const size = index === 0 ? 22 : 18;
+                          
+                          return (
+                            <div 
+                              key={index} 
+                              className="transition-all duration-300 rounded-full flex items-center justify-center bg-accent"
+                              style={{ width: size, height: size }}
+                            >
+                              <span 
+                                className="text-accent-foreground font-medium select-none"
+                                style={{ fontSize: index === 0 ? '10px' : '8px' }}
+                              >
+                                {tech.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                          );
+                        })}
+                        {project.tags.length > 4 && (
+                          <span className="text-xs text-muted-foreground ml-1">
+                            +{project.tags.length - 4}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && !error && filteredProjects.length === 0 && (
+          <div className="text-center py-16">
+            <p className="text-muted-foreground">
+              {projects.length === 0 
+                ? "No portfolio items found. Add some experiences to get started!"
+                : "No projects found matching your criteria."
+              }
+            </p>
+            {selectedTags.length > 0 || searchQuery !== "" ? (
+              <Button 
+                onClick={() => {
+                  setSelectedTags([]);
+                  setSearchQuery("");
+                }}
+                variant="outline"
+                className="mt-4 rounded-sm"
+              >
+                Clear Filters
+              </Button>
+            ) : null}
           </div>
         )}
       </div>

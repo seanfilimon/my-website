@@ -11,65 +11,29 @@ import {
   IoCalendarOutline
 } from "react-icons/io5";
 
-const experience = [
-  {
-    company: "LegionEdge",
-    position: "Founder & CEO",
-    description: "Leading a next-generation AI-powered development platform. Building collaborative tools that help teams ship faster and smarter.",
-    websiteUrl: "https://beta.legionedge.ai",
-    isIframe: true,
-    period: "2023 - Present",
-    type: "Current",
-    tags: ["AI", "SaaS", "Developer Tools"],
-    links: {
-      live: "https://legionedge.ai",
-      case_study: "/case-studies/legionedge",
-    }
-  },
-  {
-    company: "Cezium Software Inc",
-    position: "Founder & CEO",
-    description: "Built enterprise software solutions for Fortune 500 companies. Specialized in scalable web applications and cloud infrastructure.",
-    websiteUrl: "https://cezium.software",
-    isIframe: true,
-    period: "2019 - 2023",
-    type: "Past",
-    tags: ["Enterprise", "Cloud", "Consulting"],
-    links: {
-      live: "https://cezium.software",
-      case_study: "/case-studies/cezium",
-    }
-  },
-  {
-    company: "OpticEngine Inc",
-    position: "Founder & CEO",
-    description: "Created computer vision and AI solutions for autonomous systems. Built advanced image processing technology for robotics applications.",
-    websiteUrl: "https://opticengine.net",
-    isIframe: true,
-    period: "2018 - 2022",
-    type: "Past",
-    tags: ["AI", "Computer Vision", "Hardware"],
-    links: {
-      live: "https://opticengine.net",
-      case_study: "/case-studies/opticengine",
-    }
-  },
-  {
-    company: "Self-Employed",
-    position: "Independent Developer & Consultant",
-    description: "7 years building products, consulting for startups, and helping companies scale their development teams and infrastructure.",
-    image: "/bg-pattern.png",
-    isIframe: false,
-    period: "2016 - 2023",
-    type: "Freelance",
-    tags: ["Full-Stack", "Consulting", "Mentorship"],
-    links: {
-      case_study: "/about",
-    }
-  }
-];
+// Type for experience data passed from server
+interface ExperienceItem {
+  id: string;
+  company: string;
+  position: string;
+  description: string;
+  websiteUrl: string | null;
+  image: string | null;
+  isIframe: boolean;
+  period: string;
+  type: string;
+  tags: string[];
+  links: {
+    live: string | null;
+    case_study: string;
+  };
+}
 
-export function FeaturedWork() {
+interface FeaturedWorkProps {
+  experiences: ExperienceItem[];
+}
+
+export function FeaturedWork({ experiences }: FeaturedWorkProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -77,15 +41,15 @@ export function FeaturedWork() {
 
     gsap.registerPlugin(ScrollTrigger);
 
-    // Header animation
+    // Header animation with blur
     gsap.fromTo(
       ".experience-header",
-      { opacity: 0, y: 40 },
+      { opacity: 0, filter: "blur(10px)" },
       {
         opacity: 1,
-        y: 0,
+        filter: "blur(0px)",
         duration: 0.8,
-        ease: "power3.out",
+        ease: "power2.out",
         scrollTrigger: {
           trigger: ".experience-header",
           start: "top 80%",
@@ -110,16 +74,16 @@ export function FeaturedWork() {
       }
     );
 
-    // Timeline dots animation - appear in sequence
+    // Timeline dots animation - appear in sequence with blur
     gsap.fromTo(
       ".timeline-dot",
-      { scale: 0, opacity: 0 },
+      { opacity: 0, filter: "blur(5px)" },
       {
-        scale: 1,
         opacity: 1,
+        filter: "blur(0px)",
         duration: 0.4,
         stagger: 0.15,
-        ease: "back.out(1.7)",
+        ease: "power2.out",
         scrollTrigger: {
           trigger: ".experience-list",
           start: "top 75%",
@@ -129,13 +93,13 @@ export function FeaturedWork() {
       }
     );
 
-    // Items stagger animation
+    // Items stagger animation with blur
     gsap.fromTo(
       ".experience-item",
-      { opacity: 0, x: -40 },
+      { opacity: 0, filter: "blur(10px)" },
       {
         opacity: 1,
-        x: 0,
+        filter: "blur(0px)",
         duration: 0.7,
         stagger: 0.15,
         ease: "power2.out",
@@ -170,9 +134,9 @@ export function FeaturedWork() {
           {/* Vertical Timeline Line */}
           <div className="timeline-line absolute left-0 top-0 bottom-0 w-px bg-border/30" />
 
-          {experience.map((exp) => (
+          {experiences.map((exp) => (
             <div
-              key={exp.company}
+              key={exp.id}
               className="experience-item relative pl-8 group"
             >
               {/* Timeline Dot */}
@@ -181,7 +145,7 @@ export function FeaturedWork() {
               <div className="grid md:grid-cols-[200px_1fr] gap-4 items-start">
                 {/* Left: Website Preview */}
                 <div className="relative h-32 rounded-md overflow-hidden border bg-muted/20">
-                  {exp.isIframe ? (
+                  {exp.isIframe && exp.websiteUrl ? (
                     <iframe
                       src={exp.websiteUrl}
                       title={`${exp.company} website preview`}
@@ -196,7 +160,11 @@ export function FeaturedWork() {
                       fill
                       className="object-cover"
                     />
-                  ) : null}
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+                      <span className="text-sm">No preview</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Right: Info */}

@@ -3,7 +3,7 @@
 import { gsap } from "gsap";
 
 /**
- * Fade In Animation
+ * Fade In Animation with Blur
  */
 export const fadeIn = (
   element: gsap.DOMTarget,
@@ -11,17 +11,15 @@ export const fadeIn = (
     duration?: number;
     delay?: number;
     ease?: string;
-    y?: number;
-    x?: number;
+    blur?: number;
     stagger?: number;
   }
 ) => {
-  const { duration = 1, delay = 0, ease = "power2.out", y = 0, x = 0, stagger = 0 } = options || {};
+  const { duration = 1, delay = 0, ease = "power2.out", blur = 10, stagger = 0 } = options || {};
 
   return gsap.from(element, {
     opacity: 0,
-    y,
-    x,
+    filter: `blur(${blur}px)`,
     duration,
     delay,
     ease,
@@ -30,7 +28,7 @@ export const fadeIn = (
 };
 
 /**
- * Fade Out Animation
+ * Fade Out Animation with Blur
  */
 export const fadeOut = (
   element: gsap.DOMTarget,
@@ -38,17 +36,15 @@ export const fadeOut = (
     duration?: number;
     delay?: number;
     ease?: string;
-    y?: number;
-    x?: number;
+    blur?: number;
     stagger?: number;
   }
 ) => {
-  const { duration = 1, delay = 0, ease = "power2.out", y = 0, x = 0, stagger = 0 } = options || {};
+  const { duration = 1, delay = 0, ease = "power2.out", blur = 10, stagger = 0 } = options || {};
 
   return gsap.to(element, {
     opacity: 0,
-    y,
-    x,
+    filter: `blur(${blur}px)`,
     duration,
     delay,
     ease,
@@ -57,7 +53,7 @@ export const fadeOut = (
 };
 
 /**
- * Fade In Up Animation
+ * Fade In with Blur Animation (replaces fadeInUp)
  */
 export const fadeInUp = (
   element: gsap.DOMTarget,
@@ -65,15 +61,15 @@ export const fadeInUp = (
     duration?: number;
     delay?: number;
     ease?: string;
-    distance?: number;
+    blur?: number;
     stagger?: number;
   }
 ) => {
-  const { duration = 1, delay = 0, ease = "power3.out", distance = 60, stagger = 0 } = options || {};
+  const { duration = 1, delay = 0, ease = "power2.out", blur = 10, stagger = 0 } = options || {};
 
   return gsap.from(element, {
     opacity: 0,
-    y: distance,
+    filter: `blur(${blur}px)`,
     duration,
     delay,
     ease,
@@ -82,7 +78,7 @@ export const fadeInUp = (
 };
 
 /**
- * Fade In Down Animation
+ * Fade In with Blur Animation (replaces fadeInDown)
  */
 export const fadeInDown = (
   element: gsap.DOMTarget,
@@ -90,15 +86,15 @@ export const fadeInDown = (
     duration?: number;
     delay?: number;
     ease?: string;
-    distance?: number;
+    blur?: number;
     stagger?: number;
   }
 ) => {
-  const { duration = 1, delay = 0, ease = "power3.out", distance = 60, stagger = 0 } = options || {};
+  const { duration = 1, delay = 0, ease = "power2.out", blur = 10, stagger = 0 } = options || {};
 
   return gsap.from(element, {
     opacity: 0,
-    y: -distance,
+    filter: `blur(${blur}px)`,
     duration,
     delay,
     ease,
@@ -107,7 +103,7 @@ export const fadeInDown = (
 };
 
 /**
- * Fade In Left Animation
+ * Fade In with Blur Animation (replaces fadeInLeft)
  */
 export const fadeInLeft = (
   element: gsap.DOMTarget,
@@ -115,15 +111,15 @@ export const fadeInLeft = (
     duration?: number;
     delay?: number;
     ease?: string;
-    distance?: number;
+    blur?: number;
     stagger?: number;
   }
 ) => {
-  const { duration = 1, delay = 0, ease = "power3.out", distance = 60, stagger = 0 } = options || {};
+  const { duration = 1, delay = 0, ease = "power2.out", blur = 10, stagger = 0 } = options || {};
 
   return gsap.from(element, {
     opacity: 0,
-    x: -distance,
+    filter: `blur(${blur}px)`,
     duration,
     delay,
     ease,
@@ -132,7 +128,7 @@ export const fadeInLeft = (
 };
 
 /**
- * Fade In Right Animation
+ * Fade In with Blur Animation (replaces fadeInRight)
  */
 export const fadeInRight = (
   element: gsap.DOMTarget,
@@ -140,15 +136,15 @@ export const fadeInRight = (
     duration?: number;
     delay?: number;
     ease?: string;
-    distance?: number;
+    blur?: number;
     stagger?: number;
   }
 ) => {
-  const { duration = 1, delay = 0, ease = "power3.out", distance = 60, stagger = 0 } = options || {};
+  const { duration = 1, delay = 0, ease = "power2.out", blur = 10, stagger = 0 } = options || {};
 
   return gsap.from(element, {
     opacity: 0,
-    x: distance,
+    filter: `blur(${blur}px)`,
     duration,
     delay,
     ease,
@@ -157,7 +153,7 @@ export const fadeInRight = (
 };
 
 /**
- * Fade In Scale Animation
+ * Fade In with Blur Animation (replaces fadeInScale)
  */
 export const fadeInScale = (
   element: gsap.DOMTarget,
@@ -165,19 +161,18 @@ export const fadeInScale = (
     duration?: number;
     delay?: number;
     ease?: string;
-    scale?: number;
+    blur?: number;
     stagger?: number;
   }
 ) => {
-  const { duration = 1, delay = 0, ease = "back.out(1.7)", scale = 0.8, stagger = 0 } = options || {};
+  const { duration = 1, delay = 0, ease = "power2.out", blur = 10, stagger = 0 } = options || {};
 
   return gsap.from(element, {
     opacity: 0,
-    scale,
+    filter: `blur(${blur}px)`,
     duration,
     delay,
     ease,
     stagger,
   });
 };
-

@@ -3,7 +3,7 @@
 import { gsap } from "gsap";
 
 /**
- * Modal Fade Transition
+ * Modal Fade Transition with Blur
  */
 export const modalFadeTransition = (
   modal: gsap.DOMTarget,
@@ -11,9 +11,10 @@ export const modalFadeTransition = (
   options?: {
     duration?: number;
     ease?: string;
+    blur?: number;
   }
 ) => {
-  const { duration = 0.3, ease = "power2.out" } = options || {};
+  const { duration = 0.3, ease = "power2.out", blur = 10 } = options || {};
 
   const tl = gsap.timeline();
 
@@ -29,6 +30,7 @@ export const modalFadeTransition = (
     modal,
     {
       opacity: 0,
+      filter: `blur(${blur}px)`,
       duration,
       ease,
     },
@@ -39,7 +41,7 @@ export const modalFadeTransition = (
 };
 
 /**
- * Modal Scale Transition
+ * Modal Blur Transition (replaces scale)
  */
 export const modalScaleTransition = (
   modal: gsap.DOMTarget,
@@ -47,10 +49,10 @@ export const modalScaleTransition = (
   options?: {
     duration?: number;
     ease?: string;
-    scale?: number;
+    blur?: number;
   }
 ) => {
-  const { duration = 0.4, ease = "back.out(1.7)", scale = 0.8 } = options || {};
+  const { duration = 0.4, ease = "power2.out", blur = 10 } = options || {};
 
   const tl = gsap.timeline();
 
@@ -66,7 +68,7 @@ export const modalScaleTransition = (
     modal,
     {
       opacity: 0,
-      scale,
+      filter: `blur(${blur}px)`,
       duration,
       ease,
     },
@@ -77,7 +79,7 @@ export const modalScaleTransition = (
 };
 
 /**
- * Modal Slide Transition
+ * Modal Blur Transition (replaces slide)
  */
 export const modalSlideTransition = (
   modal: gsap.DOMTarget,
@@ -85,17 +87,10 @@ export const modalSlideTransition = (
   options?: {
     duration?: number;
     ease?: string;
-    direction?: "up" | "down" | "left" | "right";
+    blur?: number;
   }
 ) => {
-  const { duration = 0.5, ease = "power3.out", direction = "up" } = options || {};
-
-  const directionMap = {
-    up: { y: "100%" },
-    down: { y: "-100%" },
-    left: { x: "100%" },
-    right: { x: "-100%" },
-  };
+  const { duration = 0.5, ease = "power2.out", blur = 10 } = options || {};
 
   const tl = gsap.timeline();
 
@@ -110,7 +105,8 @@ export const modalSlideTransition = (
   tl.from(
     modal,
     {
-      ...directionMap[direction],
+      opacity: 0,
+      filter: `blur(${blur}px)`,
       duration,
       ease,
     },
@@ -119,4 +115,3 @@ export const modalSlideTransition = (
 
   return tl;
 };
-

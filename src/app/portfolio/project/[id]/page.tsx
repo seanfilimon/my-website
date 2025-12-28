@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { 
+import {
   IoArrowBackOutline,
   IoOpenOutline,
-  IoLogoGithub
+  IoLogoGithub,
 } from "react-icons/io5";
 
 const getProjectData = async (id: string) => {
@@ -14,7 +14,8 @@ const getProjectData = async (id: string) => {
       name: "React UI Pro",
       category: "Libraries",
       tagline: "Production-ready React component library",
-      description: "A comprehensive React component library built with TypeScript, featuring accessibility-first design, comprehensive documentation, and seamless integration with popular styling frameworks.",
+      description:
+        "A comprehensive React component library built with TypeScript, featuring accessibility-first design, comprehensive documentation, and seamless integration with popular styling frameworks.",
       image: "/bg-pattern.png",
       github: "https://github.com/seanfilimon/react-ui-pro",
       demo: "https://react-ui-pro.dev",
@@ -22,9 +23,16 @@ const getProjectData = async (id: string) => {
         stars: "2,400",
         downloads: "50,000+",
         components: "85",
-        contributors: "12"
+        contributors: "12",
       },
-      technologies: ["React", "TypeScript", "Storybook", "Tailwind CSS", "Vite", "Vitest"],
+      technologies: [
+        "React",
+        "TypeScript",
+        "Storybook",
+        "Tailwind CSS",
+        "Vite",
+        "Vitest",
+      ],
       features: [
         "85+ production-ready components",
         "Full TypeScript support",
@@ -33,32 +41,44 @@ const getProjectData = async (id: string) => {
         "Comprehensive Storybook documentation",
         "Tree-shakeable exports",
         "Zero runtime dependencies",
-        "Full test coverage"
+        "Full test coverage",
       ],
       timeline: [
         { date: "Jan 2024", event: "Project started" },
         { date: "Mar 2024", event: "First public release" },
         { date: "Jun 2024", event: "1,000 GitHub stars" },
         { date: "Sep 2024", event: "Major v2.0 release" },
-        { date: "Dec 2024", event: "2,400 stars milestone" }
-      ]
-    }
+        { date: "Dec 2024", event: "2,400 stars milestone" },
+      ],
+    },
   };
 
   return projects[id as keyof typeof projects] || null;
 };
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const project = await getProjectData(params.id);
-  
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const project = await getProjectData(id);
+
   return {
-    title: project ? `${project.name} | Sean Filimon Portfolio` : "Project Not Found",
-    description: project?.description || "Project not found."
+    title: project
+      ? `${project.name} | Sean Filimon Portfolio`
+      : "Project Not Found",
+    description: project?.description || "Project not found.",
   };
 }
 
-export default async function ProjectPage({ params }: { params: { id: string } }) {
-  const project = await getProjectData(params.id);
+export default async function ProjectPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const project = await getProjectData(id);
 
   if (!project) {
     return (
@@ -93,19 +113,36 @@ export default async function ProjectPage({ params }: { params: { id: string } }
                 {project.category}
               </span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">{project.name}</h1>
-            <p className="text-xl text-muted-foreground mb-6">{project.tagline}</p>
-            <p className="text-muted-foreground leading-relaxed mb-8">{project.description}</p>
-            
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              {project.name}
+            </h1>
+            <p className="text-xl text-muted-foreground mb-6">
+              {project.tagline}
+            </p>
+            <p className="text-muted-foreground leading-relaxed mb-8">
+              {project.description}
+            </p>
+
             <div className="flex gap-3">
-              <Button asChild className="rounded-sm font-bold text-black dark:text-black">
-                <Link href={project.demo} target="_blank" className="flex items-center gap-2">
+              <Button
+                asChild
+                className="rounded-sm font-bold text-black dark:text-black"
+              >
+                <Link
+                  href={project.demo}
+                  target="_blank"
+                  className="flex items-center gap-2"
+                >
                   <IoOpenOutline className="h-4 w-4" />
                   View Demo
                 </Link>
               </Button>
               <Button asChild variant="outline" className="rounded-sm">
-                <Link href={project.github} target="_blank" className="flex items-center gap-2">
+                <Link
+                  href={project.github}
+                  target="_blank"
+                  className="flex items-center gap-2"
+                >
                   <IoLogoGithub className="h-4 w-4" />
                   Source Code
                 </Link>
@@ -129,7 +166,7 @@ export default async function ProjectPage({ params }: { params: { id: string } }
             <div key={key} className="border rounded-sm p-6 text-center">
               <div className="text-2xl font-bold mb-2">{value}</div>
               <div className="text-sm text-muted-foreground capitalize">
-                {key.replace('_', ' ')}
+                {key.replace("_", " ")}
               </div>
             </div>
           ))}

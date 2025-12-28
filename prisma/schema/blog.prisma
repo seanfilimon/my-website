@@ -1,0 +1,66 @@
+// Blog models
+
+model Blog {
+  id      String @id @default(cuid())
+  title   String
+  slug    String @unique
+  excerpt String @db.Text
+  content String @db.Text // MDX content
+
+  // Associated Resource (optional for personal blogs)
+  resource   Resource? @relation(fields: [resourceId], references: [id], onDelete: SetNull)
+  resourceId String?
+
+  // Category
+  category   ContentCategory? @relation(fields: [categoryId], references: [id])
+  categoryId String?
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+
+  // Media
+  thumbnail  String?
+  coverImage String?
+
+  // Stats
+  readTime String // "6 min read"
+  views    Int    @default(0)
+  likes    Int    @default(0)
+
+  // Publishing
+  status      ContentStatus @default(DRAFT)
+  publishedAt DateTime?
+  featured    Boolean       @default(false)
+
+  // Author
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tags     BlogTag[]
+  comments Comment[]
+
+  @@index([resourceId])
+  @@index([authorId])
+  @@index([status])
+  @@index([publishedAt])
+  @@map("blogs")
+}
+
+// Blog Tags
+model BlogTag {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+
+  blogs Blog[]
+
+  createdAt DateTime @default(now())
+
+  @@map("blog_tags")
+}

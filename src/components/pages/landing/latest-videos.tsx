@@ -11,55 +11,42 @@ import {
   IoEyeOutline
 } from "react-icons/io5";
 
-const latestVideos = [
-  {
-    id: 1,
-    title: "Building a SaaS from Scratch",
-    thumbnail: "/bg-pattern.png",
-    duration: "24:15",
-    views: "12.5K",
-    publishedAt: "2 days ago",
-    href: "/tutorials/building-saas-from-scratch"
-  },
-  {
-    id: 2,
-    title: "Next.js 16 New Features",
-    thumbnail: "/bg-pattern.png",
-    duration: "18:42",
-    views: "8.2K",
-    publishedAt: "5 days ago",
-    href: "/tutorials/nextjs-16-features"
-  },
-  {
-    id: 3,
-    title: "Advanced GSAP Animations",
-    thumbnail: "/bg-pattern.png",
-    duration: "32:08",
-    views: "15.3K",
-    publishedAt: "1 week ago",
-    href: "/tutorials/advanced-gsap-animations"
-  },
-  {
-    id: 4,
-    title: "Building AI Features with OpenAI",
-    thumbnail: "/bg-pattern.png",
-    duration: "28:30",
-    views: "21.8K",
-    publishedAt: "1 week ago",
-    href: "/tutorials/ai-features-openai"
-  },
-  {
-    id: 5,
-    title: "TypeScript Best Practices 2025",
-    thumbnail: "/bg-pattern.png",
-    duration: "19:45",
-    views: "9.7K",
-    publishedAt: "2 weeks ago",
-    href: "/tutorials/typescript-best-practices"
-  }
-];
+// Type for video data passed from server
+interface VideoItem {
+  id: string;
+  title: string;
+  slug: string;
+  thumbnail: string;
+  duration: string;
+  views: string;
+  publishedAt: Date | null;
+  href: string;
+}
 
-export function LatestVideos() {
+interface LatestVideosProps {
+  videos: VideoItem[];
+}
+
+/**
+ * Format relative time for display
+ */
+function formatRelativeTime(date: Date | string | null): string {
+  if (!date) return "Recently";
+  
+  const now = new Date();
+  const diff = now.getTime() - new Date(date).getTime();
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  
+  if (days === 0) return "Today";
+  if (days === 1) return "Yesterday";
+  if (days < 7) return `${days} days ago`;
+  if (days < 14) return "1 week ago";
+  if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
+  if (days < 60) return "1 month ago";
+  return `${Math.floor(days / 30)} months ago`;
+}
+
+export function LatestVideos({ videos }: LatestVideosProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -130,7 +117,7 @@ export function LatestVideos() {
 
         {/* Videos Grid - Single Row */}
         <div className="videos-grid grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {latestVideos.map((video) => (
+          {videos.map((video) => (
             <Link
               key={video.id}
               href={video.href}
@@ -168,7 +155,7 @@ export function LatestVideos() {
                   </div>
                   <div className="flex items-center gap-1">
                     <IoTimeOutline className="h-3 w-3" />
-                    <span>{video.publishedAt}</span>
+                    <span>{formatRelativeTime(video.publishedAt)}</span>
                   </div>
                 </div>
               </div>

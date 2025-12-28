@@ -1,0 +1,45 @@
+// SEO metadata model - polymorphic relation to any content type
+
+model SEO {
+  id String @id @default(cuid())
+
+  // Polymorphic relation
+  entityType String // "blog", "article", "resource", "course", "video"
+  entityId   String
+
+  // Basic SEO
+  metaTitle       String?
+  metaDescription String? @db.Text
+  canonicalUrl    String?
+
+  // Open Graph
+  ogTitle       String?
+  ogDescription String? @db.Text
+  ogImage       String?
+  ogType        String? @default("article")
+
+  // Twitter Cards
+  twitterTitle       String?
+  twitterDescription String? @db.Text
+  twitterImage       String?
+  twitterCard        String? @default("summary_large_image")
+
+  // Advanced
+  robots        String? // "index,follow", "noindex,nofollow"
+  keywords      String? @db.Text // comma-separated
+  author        String?
+  publishedTime DateTime?
+  modifiedTime  DateTime?
+
+  // Schema.org JSON-LD
+  schemaType String? // "Article", "BlogPosting", "Course", etc.
+  schemaData Json? // Custom structured data
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([entityType, entityId])
+  @@index([entityType])
+  @@index([entityId])
+  @@map("seo_metadata")
+}

@@ -1,0 +1,63 @@
+// Video models
+
+model Video {
+  id          String @id @default(cuid())
+  title       String
+  slug        String @unique
+  description String @db.Text
+
+  // Associated Resource
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  resourceId String
+
+  // Video Details
+  videoUrl  String // YouTube, Vimeo, or self-hosted
+  thumbnail String
+  duration  String // "24:15"
+
+  // Stats
+  views Int @default(0)
+  likes Int @default(0)
+
+  // Publishing
+  status      ContentStatus @default(DRAFT)
+  publishedAt DateTime?
+  featured    Boolean       @default(false)
+
+  // Author
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+
+  // Chapters (for longer videos)
+  chapters Json? // Array of {title, time}
+
+  // Resources/Links
+  resources Json? // Array of {name, url}
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tags     VideoTag[]
+  comments Comment[]
+
+  @@index([resourceId])
+  @@index([authorId])
+  @@index([status])
+  @@index([publishedAt])
+  @@map("videos")
+}
+
+// Video Tags
+model VideoTag {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+
+  videos Video[]
+
+  createdAt DateTime @default(now())
+
+  @@map("video_tags")
+}

@@ -1,18 +1,37 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Image configuration
+  // Image configuration - allow all sources
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'avatars.githubusercontent.com',
+        hostname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: '**',
       },
       {
         protocol: 'https',
-        hostname: 'github.com',
-      },
+        hostname: '*.ufs.sh',
+      }
     ],
+    localPatterns: [
+      {
+        pathname: '/api/og/blog',
+        search: '',
+      },
+      {
+        pathname: '/me.jpg',
+        search: '',
+      }, 
+      {
+        pathname: '/bg-pattern.png',
+        search: '',
+      }
+    ],
+    dangerouslyAllowSVG: true,
   },
 
   // TypeScript strict mode

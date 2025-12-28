@@ -1,0 +1,107 @@
+// Resource models - frameworks, libraries, tools, etc.
+
+model Resource {
+  id          String @id @default(cuid())
+  name        String @unique // e.g., "Next.js"
+  slug        String @unique // e.g., "nextjs"
+  icon        String // Text/emoji icon e.g., "▲"
+  iconUrl     String? // Optional uploaded image URL for custom icon
+  color       String // e.g., "#000000"
+  description String @db.Text
+  featured    Boolean @default(false) // Show in featured section
+
+  // Resource type
+  type   ResourceType @relation(fields: [typeId], references: [id])
+  typeId String
+
+  // Category (Framework, Language, Library, etc.)
+  category   ResourceCategory @relation(fields: [categoryId], references: [id])
+  categoryId String
+
+  // Metadata
+  officialUrl String?
+  docsUrl     String?
+  githubUrl   String?
+
+  // Stats
+  articleCount Int @default(0)
+  blogCount    Int @default(0)
+  courseCount  Int @default(0)
+  videoCount   Int @default(0)
+
+  // OG Image Customization
+  ogBackgroundColor String? @default("#000000") // Background color
+  ogBorderColor     String? @default("#262626") // Border/outline color
+  ogTextPrimary     String? @default("#ffffff") // Primary text (title)
+  ogTextSecondary   String? @default("#a3a3a3") // Secondary text (excerpt, meta)
+  ogAccentStart     String? @default("#3b82f6") // Gradient start (for avatar, accents)
+  ogAccentEnd       String? @default("#8b5cf6") // Gradient end
+  ogResourceBgColor String? @default("#000000") // Right column background
+  ogFontWeight      Int?    @default(500)       // Title font weight (400-700)
+  ogBorderWidth     Int?    @default(2)         // Border width in pixels (1-5)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  articles    Article[]
+  blogs       Blog[]
+  courses     Course[]
+  videos      Video[]
+  tags        ResourceTag[]
+  experiences Experience[]
+
+  @@map("resources")
+}
+
+// Resource Types (Framework, Library, Tool, etc.)
+model ResourceType {
+  id          String  @id @default(cuid())
+  name        String  @unique // "Framework", "Library", "Language", etc.
+  slug        String  @unique
+  description String?
+  order       Int     @default(0) // Display order for sorting
+
+  // Relations
+  resources Resource[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("resource_types")
+}
+
+// Resource Categories (Frontend, Backend, Database, etc.)
+model ResourceCategory {
+  id          String  @id @default(cuid())
+  name        String  @unique // "Frontend", "Backend", "Database", etc.
+  slug        String  @unique
+  description String?
+  color       String? // For UI
+  icon        String? // Emoji/text icon
+  iconUrl     String? // Uploaded image URL
+  order       Int     @default(0) // Display order for sorting
+
+  // Relations
+  resources Resource[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("resource_categories")
+}
+
+// Tags for Resources
+model ResourceTag {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+
+  // Relations
+  resources Resource[]
+
+  createdAt DateTime @default(now())
+
+  @@map("resource_tags")
+}

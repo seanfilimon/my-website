@@ -26,7 +26,7 @@ export function Footer() {
               <Link href="/" className="flex items-center gap-3 mb-4">
                 <div className="relative h-12 w-12 overflow-hidden rounded-full shrink-0">
                   <Image
-                    src="/face_grayscale_nobg.png"
+                    src="/me.jpg"
                     alt="Sean Filimon"
                     fill
                     className="object-cover"

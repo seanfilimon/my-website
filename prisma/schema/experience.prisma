@@ -1,0 +1,263 @@
+// Experience models
+
+enum ExperienceType {
+  WORK // Professional work experience
+  PROJECT // Personal or professional projects
+  EDUCATION // Educational experiences
+  CERTIFICATION // Certifications and courses
+  VOLUNTEER // Volunteer work
+  ACHIEVEMENT // Awards and achievements
+  SPEAKING // Speaking engagements
+  PUBLICATION // Publications and articles
+}
+
+// Employment Type for Work Experiences
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  FREELANCE
+  INTERNSHIP
+  REMOTE
+  HYBRID
+}
+
+// Experience Status
+enum ExperienceStatus {
+  CURRENT // Currently active/ongoing
+  COMPLETED // Completed experience
+  UPCOMING // Future/planned experience
+  ON_HOLD // Temporarily paused
+}
+
+// Main Experience Model
+model Experience {
+  id String @id @default(cuid())
+
+  // Basic Information
+  title       String // Job title, project name, degree, etc.
+  subtitle    String? // Company name, institution, etc.
+  description String  @db.Text // Detailed description
+  summary     String? // Brief summary for cards/previews
+
+  // Type and Category
+  type           ExperienceType
+  employmentType EmploymentType? // Only for WORK type
+  status         ExperienceStatus @default(COMPLETED)
+
+  // Duration
+  startDate DateTime
+  endDate   DateTime? // Null if current/ongoing
+  duration  String? // Calculated or custom duration string
+
+  // Location
+  location String? // City, Country or "Remote"
+  isRemote Boolean @default(false)
+
+  // Organization/Company
+  organization     String?
+  organizationLogo String?
+  organizationUrl  String?
+
+  // Media
+  thumbnail  String? // Preview image
+  coverImage String? // Full cover image
+  gallery    String[] // Array of image URLs
+
+  // Links
+  projectUrl String? // Link to project/work
+  githubUrl  String? // GitHub repository
+  demoUrl    String? // Live demo
+  videoUrl   String? // Video presentation
+
+  // Skills and Technologies
+  skills       ExperienceSkill[]
+  technologies ExperienceTechnology[]
+
+  // Achievements and Highlights
+  highlights ExperienceHighlight[]
+  metrics    ExperienceMetric[]
+
+  // Resources (if experience relates to a tech resource)
+  resource   Resource? @relation(fields: [resourceId], references: [id])
+  resourceId String?
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+  slug            String  @unique
+
+  // Visibility
+  featured  Boolean @default(false)
+  published Boolean @default(true)
+  order     Int     @default(0) // For manual ordering
+
+  // User/Author
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tags         ExperienceTag[]
+  testimonials Testimonial[]
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([featured])
+  @@index([published])
+  @@map("experiences")
+}
+
+// Experience Skills (Many-to-Many)
+model ExperienceSkill {
+  id         String  @id @default(cuid())
+  name       String
+  level      String? // Beginner, Intermediate, Advanced, Expert
+  yearsOfUse Int? // Years of experience with this skill
+
+  experiences Experience[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([name])
+  @@map("experience_skills")
+}
+
+// Experience Technologies (Many-to-Many)
+model ExperienceTechnology {
+  id       String  @id @default(cuid())
+  name     String
+  category String? // Frontend, Backend, Database, DevOps, etc.
+  icon     String? // Icon URL or identifier
+
+  experiences Experience[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([name])
+  @@map("experience_technologies")
+}
+
+// Experience Highlights/Bullet Points
+model ExperienceHighlight {
+  id String @id @default(cuid())
+
+  content String @db.Text // The highlight text
+  order   Int    @default(0)
+
+  // Relations
+  experience   Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  experienceId String
+
+  createdAt DateTime @default(now())
+
+  @@index([experienceId])
+  @@map("experience_highlights")
+}
+
+// Experience Metrics/KPIs
+model ExperienceMetric {
+  id String @id @default(cuid())
+
+  label String // "Team Size", "Budget", "Users Impacted", etc.
+  value String // "10+", "$1M", "50,000+", etc.
+  unit  String? // Optional unit of measurement
+  icon  String? // Optional icon
+
+  // Relations
+  experience   Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  experienceId String
+
+  order Int @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@index([experienceId])
+  @@map("experience_metrics")
+}
+
+// Experience Tags
+model ExperienceTag {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+
+  experiences Experience[]
+
+  createdAt DateTime @default(now())
+
+  @@map("experience_tags")
+}
+
+// Testimonials/Recommendations
+model Testimonial {
+  id String @id @default(cuid())
+
+  // Content
+  content String  @db.Text
+  excerpt String? // Short version
+
+  // Author Information
+  authorName     String
+  authorTitle    String? // Job title
+  authorCompany  String? // Company name
+  authorImage    String? // Avatar URL
+  authorLinkedIn String? // LinkedIn profile
+
+  // Metadata
+  rating   Int? // 1-5 star rating
+  verified Boolean @default(false)
+  featured Boolean @default(false)
+
+  // Relations
+  experience   Experience? @relation(fields: [experienceId], references: [id])
+  experienceId String?
+
+  // Timestamps
+  givenAt   DateTime @default(now()) // When testimonial was given
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([experienceId])
+  @@map("testimonials")
+}
+
+// Project Collaborators (for PROJECT type experiences)
+model ProjectCollaborator {
+  id String @id @default(cuid())
+
+  name       String
+  role       String // "Frontend Developer", "Designer", etc.
+  profileUrl String? // Link to their profile
+  image      String? // Avatar
+
+  // Many-to-many would require junction table
+  // For simplicity, using experienceId directly
+  experienceId String
+
+  createdAt DateTime @default(now())
+
+  @@index([experienceId])
+  @@map("project_collaborators")
+}
+
+// Certification Details (for CERTIFICATION type experiences)
+model CertificationDetail {
+  id String @id @default(cuid())
+
+  credentialId  String? // Certification number/ID
+  credentialUrl String? // Verification URL
+  issuingOrg    String // Issuing organization
+  expiryDate    DateTime? // Expiration date if applicable
+
+  experienceId String @unique // One-to-one with Experience
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("certification_details")
+}

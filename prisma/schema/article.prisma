@@ -1,0 +1,88 @@
+// Article models
+
+model Article {
+  id      String @id @default(cuid())
+  title   String
+  slug    String @unique
+  excerpt String @db.Text
+  content String @db.Text // MDX content
+
+  // Associated Resource
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  resourceId String
+
+  // Category & Metadata
+  category   ContentCategory @relation(fields: [categoryId], references: [id])
+  categoryId String
+  difficulty DifficultyLevel @default(INTERMEDIATE)
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+
+  // Media
+  thumbnail  String?
+  coverImage String?
+
+  // Stats
+  readTime String // "8 min read"
+  views    Int    @default(0)
+  likes    Int    @default(0)
+
+  // Publishing
+  status      ContentStatus @default(DRAFT)
+  publishedAt DateTime?
+  featured    Boolean       @default(false)
+
+  // Author
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tags     ArticleTag[]
+  comments Comment[]
+
+  @@index([resourceId])
+  @@index([authorId])
+  @@index([status])
+  @@index([publishedAt])
+  @@map("articles")
+}
+
+// Article Tags
+model ArticleTag {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+
+  articles Article[]
+
+  createdAt DateTime @default(now())
+
+  @@map("article_tags")
+}
+
+// Content Categories (Tutorial, Guide, Reference, etc.)
+model ContentCategory {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  slug        String  @unique
+  description String?
+  color       String?
+  icon        String? // Emoji/text icon
+  iconUrl     String? // Uploaded image URL
+  order       Int     @default(0) // Display order for sorting
+
+  // Relations
+  articles Article[]
+  blogs    Blog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("content_categories")
+}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   IoPlayCircleOutline,
@@ -21,13 +22,17 @@ export function ResourceCard({ resource }: ResourceCardProps) {
       <div className="p-6 border-b bg-muted/20">
         <div className="flex items-center gap-4">
           <div
-            className="flex items-center justify-center h-12 w-12 rounded-lg text-xl font-bold shrink-0"
+            className="flex items-center justify-center h-12 w-12 rounded-lg text-xl font-bold shrink-0 overflow-hidden"
             style={{ 
-              backgroundColor: `${resource.color}20`,
+              backgroundColor: resource.logoUrl ? 'transparent' : `${resource.color}20`,
               color: resource.color
             }}
           >
-            {resource.logo}
+            {resource.logoUrl ? (
+              <Image src={resource.logoUrl} alt={resource.name} width={48} height={48} className="object-contain" />
+            ) : (
+              resource.logo
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="text-lg font-bold group-hover:text-primary transition-colors truncate">

@@ -1,0 +1,42 @@
+// Comment model
+
+model Comment {
+  id      String @id @default(cuid())
+  content String @db.Text
+
+  // Author
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  // Polymorphic relation - can be on Article, Blog, or Video
+  article   Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId String?
+
+  blog   Blog?   @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  blogId String?
+
+  video   Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoId String?
+
+  // Threading (optional - for replies)
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId String?
+  replies  Comment[] @relation("CommentReplies")
+
+  // Stats
+  likes Int @default(0)
+
+  // Moderation
+  approved Boolean @default(true)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([articleId])
+  @@index([blogId])
+  @@index([videoId])
+  @@index([parentId])
+  @@map("comments")
+}

@@ -32,7 +32,7 @@ import {
 // Carousel images
 const carouselImages = [
   {
-    src: "/face_grayscale_nobg.png",
+    src: "/me.jpg",
     alt: "Sean Filimon - Entrepreneur"
   },
   {
@@ -44,7 +44,7 @@ const carouselImages = [
     alt: "Speaking at Conference"
   },
   {
-    src: "/face_grayscale_nobg.png",
+    src: "/me.jpg",
     alt: "Team Building"
   },
   {
@@ -96,48 +96,48 @@ export function HeroSection() {
       stagger: 0.5
     });
 
-    // Main content animations
+    // Main content animations with blur
     const tl = gsap.timeline({ delay: 0.2 });
     
-    tl.set(".hero-left > *", { opacity: 0, x: -50 })
-      .set(".hero-right > *", { opacity: 0, x: 50 })
-      .set(".floating-card", { opacity: 0, scale: 0.8 })
+    tl.set(".hero-left > *", { opacity: 0, filter: "blur(10px)" })
+      .set(".hero-right > *", { opacity: 0, filter: "blur(10px)" })
+      .set(".floating-card", { opacity: 0, filter: "blur(10px)" })
       .to(".hero-left > *", { 
         opacity: 1, 
-        x: 0, 
+        filter: "blur(0px)", 
         duration: 0.8, 
         stagger: 0.1,
-        ease: "power3.out" 
+        ease: "power2.out" 
       })
       .to(".hero-right > *", { 
         opacity: 1, 
-        x: 0, 
+        filter: "blur(0px)", 
         duration: 0.6, 
         stagger: 0.1,
-        ease: "power3.out" 
+        ease: "power2.out" 
       }, "-=0.4")
       .to(".floating-card", { 
         opacity: 1, 
-        scale: 1, 
+        filter: "blur(0px)", 
         duration: 0.8,
         stagger: 0.1,
-        ease: "back.out(1.7)"
+        ease: "power2.out"
       }, "-=0.6");
 
-    // Resources section animation
+    // Resources section animation with blur
     if (resourcesRef.current) {
       // Animate heading
       gsap.fromTo(
         ".resources-header",
         {
           opacity: 0,
-          y: 50
+          filter: "blur(10px)"
         },
         {
           opacity: 1,
-          y: 0,
+          filter: "blur(0px)",
           duration: 0.8,
-          ease: "power3.out",
+          ease: "power2.out",
           scrollTrigger: {
             trigger: ".resources-header",
             start: "top 80%",
@@ -146,18 +146,16 @@ export function HeroSection() {
         }
       );
 
-      // Animate resource cards with stagger
+      // Animate resource cards with stagger blur
       gsap.fromTo(
         ".resource-card",
         {
           opacity: 0,
-          y: 30,
-          scale: 0.95
+          filter: "blur(8px)"
         },
         {
           opacity: 1,
-          y: 0,
-          scale: 1,
+          filter: "blur(0px)",
           duration: 0.6,
           stagger: 0.05,
           ease: "power2.out",
@@ -178,27 +176,38 @@ export function HeroSection() {
 
   return (
     <section ref={heroRef} className="relative min-h-screen flex flex-col overflow-hidden">
-      {/* Dynamic Background */}
+      {/* Refined Monochromatic Background */}
       <div className="absolute inset-0 -z-10">
-        {/* City Background */}
+        {/* Subtle Pattern Background */}
         <div className="absolute inset-0">
           <Image
             src="/bg-pattern.png"
             alt="Background"
             fill
-            className="object-cover opacity-15"
-            style={{ filter: 'grayscale(100%) contrast(1.2)' }}
+            className="object-cover opacity-5"
+            style={{ filter: 'grayscale(100%) contrast(0.8)' }}
             priority
           />
         </div>
         
-        {/* Multiple Gradient Layers */}
-        <div className="absolute inset-0 bg-linear-to-br from-background via-background/95 to-background/90" />
-        <div className="absolute inset-0 bg-linear-to-tr from-primary/5 via-transparent to-accent/5" />
+        {/* Clean Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/98 to-background" />
         
-        {/* Animated Orbs */}
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-conic from-primary/20 via-transparent to-accent/20 rounded-full blur-3xl animate-spin" style={{ animationDuration: '20s' }} />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-conic from-accent/15 via-transparent to-primary/15 rounded-full blur-3xl animate-spin" style={{ animationDuration: '25s', animationDirection: 'reverse' }} />
+        {/* Subtle Mesh Gradient */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-muted/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-muted/10 rounded-full blur-3xl" />
+        </div>
+        
+        {/* Grid Pattern Overlay */}
+        <div 
+          className="absolute inset-0 opacity-[0.02]"
+          style={{
+            backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
+                             linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+            backgroundSize: '50px 50px'
+          }}
+        />
       </div>
 
       {/* Main Content */}
@@ -210,8 +219,9 @@ export function HeroSection() {
             <div className="hero-left space-y-8">
               <div className="space-y-6">
                 <div>
-                  <h1 className="text-xl md:text-2xl text-primary font-semibold mb-4">
-                    Serial Entrepreneur & Software Engineer
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
+                    Serial Entrepreneur<br />
+                    <span className="text-muted-foreground">& Software Engineer</span>
                   </h1>
                 </div>
 
@@ -221,8 +231,8 @@ export function HeroSection() {
                     building companies, writing code, and helping developers level up their careers.
                   </p>
                   
-                  <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-                    <strong>What you&apos;ll find here:</strong> In-depth tutorials, startup case studies, 
+                  <p className="text-base md:text-lg text-muted-foreground/80 leading-relaxed">
+                    <span className="text-foreground font-medium">What you&apos;ll find here:</span> In-depth tutorials, startup case studies, 
                     open-source tools, development guides, and the real stories behind building 
                     successful tech companies from the ground up.
                   </p>
@@ -231,13 +241,13 @@ export function HeroSection() {
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-4">
-                <Button asChild size="lg" className="rounded-sm font-bold uppercase px-8">
+                <Button asChild size="lg" className="bg-foreground text-background hover:bg-foreground/90 font-medium px-8">
                   <Link href="/portfolio" className="flex items-center gap-2">
                     <IoRocketOutline className="h-5 w-5" />
                     Explore Resources
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="rounded-sm">
+                <Button asChild variant="outline" size="lg" className="border-border/50 hover:bg-muted/50">
                   <Link href="/about" className="flex items-center gap-2">
                     <IoArrowForwardOutline className="h-4 w-4" />
                     My Story

@@ -1,4 +1,36 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/src/generated/client";
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
+import fs from 'fs';
+import path from 'path';
+
+/**
+ * Get SSL configuration for database connection
+ * Uses CA certificate from ./ca-certificate.crt in project root
+ */
+function getSSLConfig(): false | { rejectUnauthorized: boolean; ca?: string } {
+  const caPath = path.join(process.cwd(), 'ca-certificate.crt');
+  
+  // Check if CA certificate exists
+  if (fs.existsSync(caPath)) {
+    return {
+      rejectUnauthorized: false,
+      ca: fs.readFileSync(caPath).toString(),
+    };
+  }
+  
+  // Fallback: allow self-signed certificates
+  return {
+    rejectUnauthorized: false,
+  };
+}
+
+/**
+ * Create PostgreSQL connection pool with SSL support
+ */
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL
+});
 
 /**
  * PrismaClient singleton instance
@@ -15,6 +47,7 @@ export const db =
       process.env.NODE_ENV === "development"
         ? ["query", "error", "warn"]
         : ["error"],
+    adapter: new PrismaPg(pool),
   });
 
 if (process.env.NODE_ENV !== "production") {

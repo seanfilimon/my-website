@@ -1,186 +1,352 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "@/components/ui/command";
+import { Badge } from "@/components/ui/badge";
 import {
   IoHomeOutline,
   IoLibraryOutline,
-  IoFolderOutline,
-  IoPlayCircleOutline,
-  IoDocumentTextOutline,
-  IoNewspaperOutline,
-  IoBookOutline,
-  IoPersonOutline,
+  IoSearchOutline,
+  IoNotificationsOutline,
+  IoAnalyticsOutline,
   IoSettingsOutline,
-  IoMenuOutline,
-  IoCloseOutline,
-  IoChevronForwardOutline,
-  IoStatsChartOutline
+  IoLogOutOutline,
+  IoPersonCircleOutline,
+  IoPersonOutline,
+  IoGridOutline,
+  IoNewspaperOutline,
+  IoDocumentTextOutline,
+  IoBookOutline,
+  IoPlayCircleOutline,
+  IoBriefcaseOutline,
+  IoLayersOutline,
+  IoPricetagsOutline,
+  IoAddOutline,
+  IoEllipsisHorizontalOutline,
+  IoSparklesOutline,
 } from "react-icons/io5";
+import { AIChatPanel } from "@/src/components/admin";
+import { AIContentProvider, useAIContent } from "@/src/lib/admin/ai-content-context";
+import type { GeneratedContent } from "@/src/components/agent/use-content-agent";
 
-const sidebarItems = [
-  { name: "Dashboard", href: "/admin", icon: IoHomeOutline },
-  { name: "Overview", href: "/admin/overview", icon: IoStatsChartOutline },
-  { 
-    name: "Content",
-    icon: IoLibraryOutline,
-    children: [
-      { name: "Articles", href: "/admin/articles", icon: IoDocumentTextOutline },
-      { name: "Blogs", href: "/admin/blogs", icon: IoNewspaperOutline },
-      { name: "Courses", href: "/admin/courses", icon: IoBookOutline },
-      { name: "Videos", href: "/admin/videos", icon: IoPlayCircleOutline },
-    ]
-  },
-  { name: "Categories", href: "/admin/categories", icon: IoFolderOutline },
-  { name: "Resources", href: "/admin/resources", icon: IoLibraryOutline },
-  { name: "Users", href: "/admin/users", icon: IoPersonOutline },
+// Quick navigation items for search
+const quickNavItems = [
+  { type: "page", title: "Content Manager", href: "/admin", icon: IoGridOutline },
+  { type: "page", title: "Create Content", href: "/admin/create", icon: IoAddOutline },
+  { type: "page", title: "Resource Types", href: "/admin/resource-types", icon: IoLayersOutline },
+  { type: "page", title: "Categories", href: "/admin/categories", icon: IoPricetagsOutline },
+  { type: "page", title: "Analytics", href: "/admin/analytics", icon: IoAnalyticsOutline },
+  { type: "page", title: "Settings", href: "/admin/settings", icon: IoSettingsOutline },
+  { type: "action", title: "New Blog Post", href: "/admin/create?type=blogs", icon: IoNewspaperOutline },
+  { type: "action", title: "New Article", href: "/admin/create?type=articles", icon: IoDocumentTextOutline },
+  { type: "action", title: "New Course", href: "/admin/create?type=courses", icon: IoBookOutline },
+  { type: "action", title: "New Video", href: "/admin/create?type=videos", icon: IoPlayCircleOutline },
+  { type: "action", title: "New Resource", href: "/admin/create?type=resources", icon: IoLibraryOutline },
+  { type: "action", title: "New Experience", href: "/admin/create?type=experiences", icon: IoBriefcaseOutline },
+];
+
+// Primary nav items (always visible)
+const primaryNavItems = [
+  { name: "Content", href: "/admin", icon: IoGridOutline },
+  { name: "Create", href: "/admin/create", icon: IoAddOutline },
+];
+
+// Secondary nav items (in "More" dropdown)
+const secondaryNavItems = [
+  { name: "Resource Types", href: "/admin/resource-types", icon: IoLayersOutline },
+  { name: "Categories", href: "/admin/categories", icon: IoPricetagsOutline },
+  { name: "Analytics", href: "/admin/analytics", icon: IoAnalyticsOutline, badge: "New" },
   { name: "Settings", href: "/admin/settings", icon: IoSettingsOutline },
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [expandedItems, setExpandedItems] = useState<string[]>(['Content']);
+  const router = useRouter();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [notifications, setNotifications] = useState(3);
+  const [aiPanelOpen, setAiPanelOpen] = useState(false);
+  
+  const { setPendingContent, activeContentType } = useAIContent();
 
-  const toggleExpand = (name: string) => {
-    setExpandedItems(prev =>
-      prev.includes(name) ? prev.filter(item => item !== name) : [...prev, name]
-    );
+  // Check if we're on the create route
+  const isCreateRoute = pathname === "/admin/create" || pathname.startsWith("/admin/create/");
+
+  // Handle applying generated content
+  const handleApplyContent = (content: GeneratedContent, selectedFields: string[]) => {
+    setPendingContent(content, selectedFields);
+    setAiPanelOpen(false);
   };
 
+  // Keyboard shortcut for search
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setSearchOpen((open) => !open);
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
+
+  const handleSearchSelect = (href: string) => {
+    setSearchOpen(false);
+    router.push(href);
+  };
+
+  // Check if current path matches any secondary nav item
+  const isSecondaryActive = secondaryNavItems.some((item) => pathname === item.href);
+
   return (
-    <div className="h-[calc(100vh-4rem)] w-full overflow-hidden bg-background">
-      <div className="flex w-full h-full overflow-hidden">
-        {/* Mobile Overlay */}
-        {sidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
+    <div className="h-[calc(100vh-4rem)] w-full overflow-hidden bg-background flex flex-col">
+      {/* Top Admin Bar */}
+      <div className="h-12 border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40 shrink-0">
+        <div className="flex items-center justify-between h-full px-3">
+          <div className="flex items-center gap-4">
+            {/* Logo/Title */}
+            <Link href="/admin" className="flex items-center gap-2">
+              <div className="h-7 w-7 rounded-md bg-primary flex items-center justify-center">
+                <IoGridOutline className="h-3.5 w-3.5 text-primary-foreground" />
+              </div>
+              <span className="font-semibold text-sm hidden sm:inline">Admin</span>
+            </Link>
 
-        {/* Sidebar */}
-        <aside
-          className={`fixed lg:static inset-y-0 left-0 z-50 w-72 bg-muted/30 border-r flex flex-col transition-transform duration-300 h-full ${
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-          }`}
-        >
-          {/* Sidebar Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b bg-background">
-            <div>
-              <h2 className="font-bold text-lg">Admin Panel</h2>
-              <p className="text-xs text-muted-foreground">Content Management</p>
-            </div>
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-2 hover:bg-accent rounded-sm"
-            >
-              <IoCloseOutline className="h-5 w-5" />
-            </button>
-          </div>
-
-          {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto p-4">
-            <ul className="space-y-1">
-              {sidebarItems.map((item) => {
-                const Icon = item.icon;
+            {/* Main Navigation */}
+            <nav className="hidden md:flex items-center gap-1">
+              {/* Primary Nav Items */}
+              {primaryNavItems.map((item) => {
                 const isActive = pathname === item.href;
-                const isExpanded = item.children && expandedItems.includes(item.name);
-
                 return (
-                  <li key={item.name}>
-                    {item.children ? (
-                      <>
-                        <button
-                          onClick={() => toggleExpand(item.name)}
-                          className="w-full flex items-center justify-between px-3 py-2 rounded-sm hover:bg-accent transition-colors text-sm"
-                        >
-                          <div className="flex items-center gap-3">
-                            <Icon className="h-4 w-4" />
-                            <span>{item.name}</span>
-                          </div>
-                          <IoChevronForwardOutline
-                            className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
-                          />
-                        </button>
-                        {isExpanded && (
-                          <ul className="ml-4 mt-1 space-y-1">
-                            {item.children.map((child) => {
-                              const ChildIcon = child.icon;
-                              const isChildActive = pathname === child.href;
-                              return (
-                                <li key={child.name}>
-                                  <Link
-                                    href={child.href}
-                                    onClick={() => setSidebarOpen(false)}
-                                    className={`flex items-center gap-3 px-3 py-2 rounded-sm text-sm transition-colors ${
-                                      isChildActive
-                                        ? 'bg-accent font-medium'
-                                        : 'hover:bg-accent/50'
-                                    }`}
-                                  >
-                                    <ChildIcon className="h-4 w-4" />
-                                    <span>{child.name}</span>
-                                  </Link>
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        )}
-                      </>
-                    ) : (
-                      <Link
-                        href={item.href}
-                        onClick={() => setSidebarOpen(false)}
-                        className={`flex items-center gap-3 px-3 py-2 rounded-sm text-sm transition-colors ${
-                          isActive ? 'bg-accent font-medium' : 'hover:bg-accent'
-                        }`}
-                      >
-                        <Icon className="h-4 w-4" />
-                        <span>{item.name}</span>
-                      </Link>
-                    )}
-                  </li>
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium rounded-md transition-colors
+                      ${isActive 
+                        ? "bg-primary text-primary-foreground" 
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"}`}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.name}</span>
+                  </Link>
                 );
               })}
-            </ul>
-          </nav>
 
-          {/* Sidebar Footer */}
-          <div className="p-4 border-t bg-background">
-            <Button asChild variant="outline" className="w-full rounded-sm" size="sm">
-              <Link href="/">
-                Back to Site
+              {/* More Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium rounded-md transition-colors
+                      ${isSecondaryActive 
+                        ? "bg-primary text-primary-foreground" 
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"}`}
+                  >
+                    <IoEllipsisHorizontalOutline className="h-4 w-4" />
+                    <span>More</span>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-48">
+                  {secondaryNavItems.map((item) => {
+                    const isActive = pathname === item.href;
+                    return (
+                      <DropdownMenuItem key={item.href} asChild>
+                        <Link
+                          href={item.href}
+                          className={`flex items-center gap-2 ${isActive ? "bg-muted" : ""}`}
+                        >
+                          <item.icon className="h-4 w-4" />
+                          <span>{item.name}</span>
+                          {item.badge && (
+                            <Badge variant="outline" className="ml-auto h-5 px-1.5 text-xs">
+                              {item.badge}
+                            </Badge>
+                          )}
+                        </Link>
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </nav>
+          </div>
+
+          <div className="flex items-center gap-1">
+            {isCreateRoute ? (
+              /* AI Toggle for Create Route */
+              <Button
+                variant={aiPanelOpen ? "default" : "outline"}
+                size="sm"
+                className="gap-2 h-8"
+                onClick={() => setAiPanelOpen(!aiPanelOpen)}
+              >
+                <IoSparklesOutline className="h-4 w-4" />
+                <span className="text-xs">AI Assistant</span>
+                <kbd className="hidden sm:inline-flex pointer-events-none h-4 select-none items-center gap-0.5 rounded border bg-muted px-1 font-mono text-[9px] font-medium text-muted-foreground">
+                  <span>⌘</span>I
+                </kbd>
+              </Button>
+            ) : (
+              /* Standard Navigation for Other Routes */
+              <>
+            {/* Global Search */}
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-48 justify-start text-muted-foreground hidden lg:flex h-8"
+              onClick={() => setSearchOpen(true)}
+            >
+              <IoSearchOutline className="mr-2 h-3.5 w-3.5" />
+              <span className="text-xs">Search...</span>
+              <kbd className="ml-auto pointer-events-none inline-flex h-4 select-none items-center gap-0.5 rounded border bg-muted px-1 font-mono text-[9px] font-medium text-muted-foreground">
+                <span>⌘</span>K
+              </kbd>
+            </Button>
+
+            {/* Mobile Search */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden h-8 w-8"
+              onClick={() => setSearchOpen(true)}
+            >
+              <IoSearchOutline className="h-4 w-4" />
+            </Button>
+
+            {/* View Site */}
+            <Button variant="ghost" size="icon" className="h-8 w-8 hidden sm:flex" asChild>
+              <Link href="/" target="_blank">
+                <IoHomeOutline className="h-4 w-4" />
               </Link>
             </Button>
-          </div>
-        </aside>
 
-        {/* Main Content Area */}
-        <div className="flex-1 min-w-0 h-full flex flex-col">
-          {/* Mobile Header Bar */}
-          <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b bg-background">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="p-2 hover:bg-accent rounded-sm -ml-2"
-            >
-              <IoMenuOutline className="h-5 w-5" />
-            </button>
-            <span className="text-sm font-medium">Admin Dashboard</span>
-            <Button variant="outline" size="sm" className="rounded-sm">
-              <IoPersonOutline className="h-4 w-4" />
+            {/* Notifications */}
+            <Button variant="ghost" size="icon" className="relative h-8 w-8">
+              <IoNotificationsOutline className="h-4 w-4" />
+              {notifications > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-red-500 text-[9px] font-bold text-white flex items-center justify-center">
+                  {notifications}
+                </span>
+              )}
             </Button>
-          </div>
 
-          {/* Scrollable Content */}
-          <main className="flex-1 overflow-y-auto">
-            {children}
-          </main>
+            {/* User Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <IoPersonCircleOutline className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44">
+                <DropdownMenuLabel className="text-xs">Admin Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-sm">
+                  <IoPersonOutline className="mr-2 h-3.5 w-3.5" />
+                  Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-sm">
+                  <IoSettingsOutline className="mr-2 h-3.5 w-3.5" />
+                  Settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-sm text-destructive">
+                  <IoLogOutOutline className="mr-2 h-3.5 w-3.5" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+              </>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Main Content Area with Side Panel */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Main Content */}
+        <main className={`flex-1 overflow-hidden transition-all duration-300 ${isCreateRoute && aiPanelOpen ? "mr-0" : ""}`}>
+        {children}
+      </main>
+
+        {/* AI Chat Side Panel for Create Route */}
+        {isCreateRoute && (
+          <AIChatPanel
+            open={aiPanelOpen}
+            onOpenChange={setAiPanelOpen}
+            activeContentType={activeContentType || undefined}
+            onApplyContent={handleApplyContent}
+          />
+        )}
+      </div>
+
+      {/* Global Search Dialog */}
+      <CommandDialog open={searchOpen} onOpenChange={setSearchOpen}>
+        <CommandInput placeholder="Search pages, actions, content..." />
+        <CommandList>
+          <CommandEmpty>No results found.</CommandEmpty>
+          
+          <CommandGroup heading="Pages">
+            {quickNavItems
+              .filter((item) => item.type === "page")
+              .map((item) => (
+                <CommandItem
+                  key={item.href}
+                  onSelect={() => handleSearchSelect(item.href)}
+                  className="flex items-center gap-3"
+                >
+                  <item.icon className="h-4 w-4 text-muted-foreground" />
+                  <span>{item.title}</span>
+                </CommandItem>
+              ))}
+          </CommandGroup>
+
+          <CommandSeparator />
+
+          <CommandGroup heading="Quick Actions">
+            {quickNavItems
+              .filter((item) => item.type === "action")
+              .map((item) => (
+                <CommandItem
+                  key={item.href}
+                  onSelect={() => handleSearchSelect(item.href)}
+                  className="flex items-center gap-3"
+                >
+                  <item.icon className="h-4 w-4 text-muted-foreground" />
+                  <span>{item.title}</span>
+                  <Badge variant="outline" className="ml-auto text-xs">
+                    Create
+                  </Badge>
+                </CommandItem>
+              ))}
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
     </div>
   );
 }
 
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <AIContentProvider>
+      <AdminLayoutContent>{children}</AdminLayoutContent>
+    </AIContentProvider>
+  );
+}

@@ -9,6 +9,9 @@ import type { EmailEvents } from "./email";
 import type { NotificationEvents } from "./notification";
 import type { StripeEvents } from "./stripe";
 import type { SystemEvents } from "./system";
+import type { ContentEvents } from "./content";
+
+import type { BlogEnhanceEvents } from "./blog-enhance";
 
 /**
  * Combined event schemas from all categories
@@ -20,7 +23,9 @@ export type Events = UserEvents &
   EmailEvents &
   NotificationEvents &
   StripeEvents &
-  SystemEvents;
+  SystemEvents &
+  ContentEvents &
+  BlogEnhanceEvents;
 
 /**
  * Re-export individual event schemas for granular imports
@@ -33,7 +38,38 @@ export type {
   NotificationEvents,
   StripeEvents,
   SystemEvents,
+  ContentEvents,
 };
+
+/**
+ * Re-export content event types for convenience
+ */
+export type {
+  ContentType,
+  ContentStatus,
+  DifficultyLevel,
+  ContentGenerationRequest,
+  BlogGenerationRequest,
+  ArticleGenerationRequest,
+  ResourceGenerationRequest,
+  ContentGenerationResult,
+  ContentGenerationFailure,
+  AgentChatMessage,
+  BlogEditAction,
+  BlogEditRequest,
+  BlogEditResult,
+} from "./content";
+
+/**
+ * Re-export blog enhancement event types
+ */
+export type {
+  BlogEnhanceRequest,
+  BlogEnhanceResult,
+  BlogEnhanceProgress,
+  BlogEnhanceFailure,
+  BlogEnhanceEvents,
+} from "./blog-enhance";
 
 /**
  * Helper type to extract event data for a specific event name

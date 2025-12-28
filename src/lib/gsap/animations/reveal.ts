@@ -3,15 +3,15 @@
 import { gsap } from "gsap";
 
 /**
- * Slide In Reveal Animation
- * Creates a reveal effect with a sliding overlay
+ * Blur Reveal Animation
+ * Creates a reveal effect with blur transition
  */
 export const slideReveal = (
   element: gsap.DOMTarget,
   options?: {
     duration?: number;
     delay?: number;
-    direction?: "left" | "right" | "top" | "bottom";
+    blur?: number;
     ease?: string;
     stagger?: number;
   }
@@ -19,23 +19,16 @@ export const slideReveal = (
   const {
     duration = 1.2,
     delay = 0,
-    direction = "left",
-    ease = "power4.inOut",
+    blur = 15,
+    ease = "power2.out",
     stagger = 0,
   } = options || {};
 
-  const directionMap = {
-    left: { x: "-100%" },
-    right: { x: "100%" },
-    top: { y: "-100%" },
-    bottom: { y: "100%" },
-  };
-
   const tl = gsap.timeline({ delay });
 
-  tl.set(element, { overflow: "hidden" });
   tl.from(element, {
-    ...directionMap[direction],
+    opacity: 0,
+    filter: `blur(${blur}px)`,
     duration,
     ease,
     stagger,
@@ -45,8 +38,8 @@ export const slideReveal = (
 };
 
 /**
- * Text Reveal Animation
- * Reveals text character by character or word by word
+ * Text Reveal Animation with Blur
+ * Reveals text with a blur fade effect
  */
 export const textReveal = (
   element: gsap.DOMTarget,
@@ -54,22 +47,21 @@ export const textReveal = (
     duration?: number;
     delay?: number;
     ease?: string;
-    splitBy?: "chars" | "words" | "lines";
+    blur?: number;
     stagger?: number;
   }
 ) => {
   const {
     duration = 0.8,
     delay = 0,
-    ease = "power3.out",
+    ease = "power2.out",
+    blur = 8,
     stagger = 0.03,
   } = options || {};
 
   return gsap.from(element, {
     opacity: 0,
-    y: 20,
-    rotationX: -90,
-    transformOrigin: "0% 50% -50",
+    filter: `blur(${blur}px)`,
     duration,
     delay,
     ease,
@@ -121,8 +113,8 @@ export const clipReveal = (
 };
 
 /**
- * Stagger Reveal Animation
- * Reveals multiple elements with a stagger effect
+ * Stagger Reveal Animation with Blur
+ * Reveals multiple elements with a stagger blur effect
  */
 export const staggerReveal = (
   elements: gsap.DOMTarget,
@@ -132,24 +124,21 @@ export const staggerReveal = (
     ease?: string;
     stagger?: number;
     from?: "start" | "center" | "end" | "edges";
-    y?: number;
-    x?: number;
+    blur?: number;
   }
 ) => {
   const {
     duration = 0.8,
     delay = 0,
-    ease = "power3.out",
+    ease = "power2.out",
     stagger = 0.1,
     from = "start",
-    y = 60,
-    x = 0,
+    blur = 10,
   } = options || {};
 
   return gsap.from(elements, {
     opacity: 0,
-    y,
-    x,
+    filter: `blur(${blur}px)`,
     duration,
     delay,
     ease,
@@ -161,8 +150,8 @@ export const staggerReveal = (
 };
 
 /**
- * Masking Reveal Animation
- * Creates a masking effect to reveal content
+ * Masking Reveal Animation with Blur
+ * Creates a blur fade effect to reveal content
  */
 export const maskReveal = (
   element: gsap.DOMTarget,
@@ -170,19 +159,19 @@ export const maskReveal = (
     duration?: number;
     delay?: number;
     ease?: string;
+    blur?: number;
   }
 ) => {
-  const { duration = 1.5, delay = 0, ease = "power4.inOut" } = options || {};
+  const { duration = 1.5, delay = 0, ease = "power2.out", blur = 15 } = options || {};
 
   const tl = gsap.timeline({ delay });
 
-  tl.set(element, { position: "relative", overflow: "hidden" });
   tl.from(element, {
-    y: "100%",
+    opacity: 0,
+    filter: `blur(${blur}px)`,
     duration,
     ease,
   });
 
   return tl;
 };
-

@@ -3,25 +3,26 @@
 import { gsap } from "gsap";
 
 /**
- * Scroll Fade In
+ * Scroll Fade In with Blur
  */
 export const scrollFadeIn = (
   element: gsap.DOMTarget,
   options?: {
     start?: string;
     end?: string;
-    y?: number;
+    blur?: number;
     stagger?: number;
     markers?: boolean;
   }
 ) => {
-  const { start = "top 80%", end = "top 50%", y = 60, stagger = 0, markers = false } = options || {};
+  const { start = "top 80%", end = "top 50%", blur = 10, stagger = 0, markers = false } = options || {};
 
   return gsap.from(element, {
     opacity: 0,
-    y,
+    filter: `blur(${blur}px)`,
     duration: 1,
     stagger,
+    ease: "power2.out",
     scrollTrigger: {
       trigger: element,
       start,
@@ -32,24 +33,25 @@ export const scrollFadeIn = (
 };
 
 /**
- * Scroll Stagger Reveal
+ * Scroll Stagger Reveal with Blur
  */
 export const scrollStaggerReveal = (
   elements: gsap.DOMTarget,
   options?: {
     start?: string;
     stagger?: number;
-    y?: number;
+    blur?: number;
     markers?: boolean;
   }
 ) => {
-  const { start = "top 80%", stagger = 0.1, y = 60, markers = false } = options || {};
+  const { start = "top 80%", stagger = 0.1, blur = 10, markers = false } = options || {};
 
   return gsap.from(elements, {
     opacity: 0,
-    y,
+    filter: `blur(${blur}px)`,
     duration: 0.8,
     stagger,
+    ease: "power2.out",
     scrollTrigger: {
       trigger: elements,
       start,
@@ -115,4 +117,3 @@ export const scrollCounter = (
     },
   });
 };
-

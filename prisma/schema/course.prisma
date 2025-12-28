@@ -1,0 +1,170 @@
+// Course models
+
+model Course {
+  id          String  @id @default(cuid())
+  title       String
+  slug        String  @unique
+  subtitle    String?
+  description String  @db.Text
+
+  // Associated Resource
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  resourceId String
+
+  // Course Details
+  level    DifficultyLevel @default(INTERMEDIATE)
+  language String          @default("English")
+
+  // Pricing
+  price         Decimal  @db.Decimal(10, 2)
+  discountPrice Decimal? @db.Decimal(10, 2)
+
+  // Media
+  thumbnail  String?
+  promoVideo String? // URL to promo video
+
+  // Stats
+  duration    String // "12 hours"
+  lessonCount Int     @default(0)
+  rating      Decimal @default(0) @db.Decimal(3, 2)
+  ratingCount Int     @default(0)
+  enrollments Int     @default(0)
+  views       Int     @default(0)
+
+  // Publishing
+  status      ContentStatus @default(DRAFT)
+  publishedAt DateTime?
+  featured    Boolean       @default(false)
+  lastUpdated DateTime      @default(now())
+
+  // Instructor
+  instructor   User   @relation(fields: [instructorId], references: [id])
+  instructorId String
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  sections      CourseSection[]
+  tags          CourseTag[]
+  enrolledUsers CourseEnrollment[]
+  reviews       CourseReview[]
+
+  @@index([resourceId])
+  @@index([instructorId])
+  @@index([status])
+  @@index([publishedAt])
+  @@map("courses")
+}
+
+// Course Sections
+model CourseSection {
+  id          String  @id @default(cuid())
+  title       String
+  description String? @db.Text
+  order       Int
+
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String
+
+  // Stats
+  duration    String // "1h 30min"
+  lessonCount Int    @default(0)
+
+  // Relations
+  lessons CourseLesson[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([courseId])
+  @@map("course_sections")
+}
+
+// Course Lessons
+model CourseLesson {
+  id          String  @id @default(cuid())
+  title       String
+  description String? @db.Text
+  order       Int
+
+  section   CourseSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  sectionId String
+
+  // Content
+  videoUrl String?
+  content  String? @db.Text // MDX for text lessons
+  duration String // "10:30"
+
+  // Access
+  isFree Boolean @default(false)
+
+  // Resources
+  resources Json? // Array of {name, url}
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sectionId])
+  @@map("course_lessons")
+}
+
+// Course Tags
+model CourseTag {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+
+  courses Course[]
+
+  createdAt DateTime @default(now())
+
+  @@map("course_tags")
+}
+
+// Course Enrollments
+model CourseEnrollment {
+  id String @id @default(cuid())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String
+
+  // Progress
+  progress  Int     @default(0) // Percentage
+  completed Boolean @default(false)
+
+  // Timestamps
+  enrolledAt   DateTime  @default(now())
+  completedAt  DateTime?
+  lastAccessed DateTime  @default(now())
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+  @@map("course_enrollments")
+}
+
+// Course Reviews
+model CourseReview {
+  id String @id @default(cuid())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String
+
+  rating  Int // 1-5
+  comment String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+  @@map("course_reviews")
+}

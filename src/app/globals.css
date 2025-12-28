@@ -269,29 +269,44 @@
   }
 
   /* Prevent Radix from adding padding when dropdown opens */
-  body {
-    padding-right: 0 !important;
-  }
-
+  body,
   html {
     padding-right: 0 !important;
+    margin-right: 0 !important;
   }
 
-  /* Prevent dropdown/portal content from causing layout shift */
+  /* Prevent Radix popper from affecting page scroll/layout */
   [data-radix-popper-content-wrapper] {
-    position: fixed !important;
-    z-index: 50;
+    z-index: 50 !important;
   }
 
-  /* Ensure dropdowns don't affect page width */
+  /* Ensure portals don't cause horizontal overflow */
+  [data-radix-portal] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+  }
+
+  [data-radix-portal] > * {
+    pointer-events: auto;
+  }
+
+  /* Prevent dropdown content from causing page width changes */
   [data-slot="dropdown-menu-content"],
   [data-radix-dropdown-menu-content] {
-    position: fixed !important;
-    max-width: calc(100vw - 2rem);
+    max-width: calc(100vw - 16px);
+    overflow-x: hidden;
   }
 
-  /* Prevent all Radix portals from adding padding */
-  [data-radix-portal] {
-    position: fixed;
+}
+
+/* Blinking cursor animation for mention input */
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
   }
 }

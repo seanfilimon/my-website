@@ -1,0 +1,57 @@
+// Asset model for storing uploaded files
+
+enum AssetType {
+  IMAGE
+  VIDEO
+  DOCUMENT
+  AUDIO
+  OTHER
+}
+
+enum AssetCategory {
+  THUMBNAIL
+  COVER_IMAGE
+  AVATAR
+  ICON
+  GALLERY
+  ATTACHMENT
+  OTHER
+}
+
+model Asset {
+  id       String @id @default(cuid())
+  
+  // Identifiers
+  name     String  // Display name (e.g., "Hero Banner")
+  title    String? // Optional title for SEO/accessibility
+  
+  // File information
+  url      String // The URL from UploadThing
+  key      String @unique // UploadThing file key for deletion
+  filename String
+  size     Int // File size in bytes
+  mimeType String
+  
+  // Classification
+  type     AssetType     @default(IMAGE)
+  category AssetCategory @default(OTHER)
+  
+  // Optional metadata
+  alt         String? // Alt text for images
+  caption     String? // Caption/description
+  width       Int? // Image width
+  height      Int? // Image height
+  
+  // Who uploaded
+  uploadedBy   User?   @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  uploadedById String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([uploadedById])
+  @@index([type])
+  @@index([category])
+  @@map("assets")
+}

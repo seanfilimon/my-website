@@ -4,7 +4,17 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { SignInButton, SignedIn, SignedOut, useClerk, useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   IoPersonOutline,
   IoLibraryOutline,
@@ -17,7 +27,11 @@ import {
   IoLogoGithub,
   IoMenuOutline,
   IoCloseOutline,
-  IoLogoDiscord
+  IoLogoDiscord,
+  IoLogInOutline,
+  IoSettingsOutline,
+  IoLogOutOutline,
+  IoShieldOutline,
 } from "react-icons/io5";
 import { AnimatedTitle } from "./animated-title";
 
@@ -28,6 +42,145 @@ const resourceTopicTabs = [
   { id: "tutorials", name: "Tutorials", icon: IoPlayCircleOutline, href: "/resources/tutorials" },
   { id: "series", name: "Series", icon: IoListOutline, href: "/resources/series" },
 ];
+
+// Admin emails that have access to the admin panel
+const ADMIN_EMAILS = [
+  "s.filimon@legionedge.ai",
+  "seanfilimon@icloud.com",
+];
+
+function UserDropdown() {
+  const { signOut, openUserProfile } = useClerk();
+  const { user } = useUser();
+  
+  const userEmail = user?.emailAddresses?.[0]?.emailAddress;
+  const isAdmin = userEmail && ADMIN_EMAILS.includes(userEmail.toLowerCase());
+  
+  const initials = user?.firstName && user?.lastName 
+    ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
+    : user?.firstName?.[0]?.toUpperCase() || "U";
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="sm" className="rounded-sm gap-2 p-1 pr-3">
+          <Avatar className="h-6 w-6 rounded-sm">
+            <AvatarImage src={user?.imageUrl} alt={user?.fullName || "User"} className="rounded-sm" />
+            <AvatarFallback className="rounded-sm text-xs">{initials}</AvatarFallback>
+          </Avatar>
+          <span className="hidden sm:inline text-sm">{user?.firstName || "Account"}</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="end" alignOffset={-4}>
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">{user?.fullName || "User"}</p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {userEmail}
+            </p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/resources" className="cursor-pointer">
+            <IoLibraryOutline className="mr-2 h-4 w-4" />
+            Resources
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => openUserProfile()} className="cursor-pointer">
+          <IoSettingsOutline className="mr-2 h-4 w-4" />
+          Account Settings
+        </DropdownMenuItem>
+        {isAdmin && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/admin" className="cursor-pointer">
+                <IoShieldOutline className="mr-2 h-4 w-4" />
+                Admin Panel
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem 
+          onClick={() => signOut({ redirectUrl: "/" })}
+          className="cursor-pointer text-destructive focus:text-destructive"
+        >
+          <IoLogOutOutline className="mr-2 h-4 w-4" />
+          Sign Out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+function MobileUserMenu({ onClose }: { onClose: () => void }) {
+  const { signOut, openUserProfile } = useClerk();
+  const { user } = useUser();
+  
+  const userEmail = user?.emailAddresses?.[0]?.emailAddress;
+  const isAdmin = userEmail && ADMIN_EMAILS.includes(userEmail.toLowerCase());
+  
+  const initials = user?.firstName && user?.lastName 
+    ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
+    : user?.firstName?.[0]?.toUpperCase() || "U";
+
+  return (
+    <div className="space-y-3">
+      {/* User Info */}
+      <div className="flex items-center gap-3 p-4 rounded-lg border">
+        <Avatar className="h-10 w-10">
+          <AvatarImage src={user?.imageUrl} alt={user?.fullName || "User"} />
+          <AvatarFallback>{initials}</AvatarFallback>
+        </Avatar>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium truncate">{user?.fullName || "User"}</p>
+          <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
+        </div>
+      </div>
+      
+      {/* Menu Items */}
+      <div className="space-y-2">
+        <Link
+          href="/resources"
+          onClick={onClose}
+          className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent transition-colors"
+        >
+          <IoLibraryOutline className="h-5 w-5" />
+          <span>Resources</span>
+        </Link>
+        <button
+          onClick={() => { openUserProfile(); onClose(); }}
+          className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent transition-colors w-full text-left"
+        >
+          <IoSettingsOutline className="h-5 w-5" />
+          <span>Account Settings</span>
+        </button>
+        {isAdmin && (
+          <Link
+            href="/admin"
+            onClick={onClose}
+            className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent transition-colors"
+          >
+            <IoShieldOutline className="h-5 w-5" />
+            <span>Admin Panel</span>
+          </Link>
+        )}
+      </div>
+      
+      {/* Sign Out */}
+      <Button 
+        variant="outline" 
+        className="w-full rounded-sm gap-2 h-12 text-destructive hover:text-destructive"
+        onClick={() => { signOut({ redirectUrl: "/" }); onClose(); }}
+      >
+        <IoLogOutOutline className="h-5 w-5" />
+        Sign Out
+      </Button>
+    </div>
+  );
+}
 
 export function UnifiedNavbar() {
   const pathname = usePathname();
@@ -46,7 +199,7 @@ export function UnifiedNavbar() {
             <Link href="/" className="flex items-center gap-3 min-w-0">
               <div className="relative h-10 w-10 overflow-hidden rounded-full shrink-0">
                 <Image
-                  src="/face_grayscale_nobg.png"
+                  src="/me.jpg"
                   alt="Sean Filimon"
                   fill
                   className="object-cover"
@@ -69,7 +222,7 @@ export function UnifiedNavbar() {
           </div>
 
           {/* Center Navigation Section */}
-          <div className="flex-1 flex items-center justify-center min-w-0 px-2">
+          <div className={`flex-1 flex items-center min-w-0 px-2 ${(isResourcesPage || isGitHubPage || isAdminPage) ? 'justify-start' : 'justify-center'}`}>
             {/* Main Navigation - Hidden in resources/admin mode and on mobile */}
             <div className={`hidden md:flex items-center gap-1 transition-opacity duration-300 ${(isResourcesPage || isGitHubPage || isAdminPage) ? 'opacity-0 pointer-events-none absolute' : 'opacity-100'}`}>
               <Button variant="ghost" asChild className="rounded-sm gap-1.5">
@@ -83,6 +236,13 @@ export function UnifiedNavbar() {
                 <Link href="/github" className="flex items-center">
                   <IoLogoGithub className="h-4 w-4" />
                   <span>GitHub</span>
+                </Link>
+              </Button>
+
+              <Button variant="ghost" asChild className="rounded-sm gap-1.5">
+                <Link href="/articles" className="flex items-center">
+                  <IoDocumentTextOutline className="h-4 w-4" />
+                  <span>Articles</span>
                 </Link>
               </Button>
 
@@ -121,41 +281,48 @@ export function UnifiedNavbar() {
                 );
               })}
             </div>
-          </div>
+            </div>
 
           {/* Right Actions Section */}
           <div className="flex items-center gap-2 shrink-0 px-4">
-            <Button 
-              variant="outline" 
-              size="sm"
-              asChild 
-              className="hidden lg:flex rounded-sm gap-2"
-            >
-              <Link href="https://discord.gg/seanfilimon" target="_blank">
-                <IoLogoDiscord className="h-4 w-4" />
+              <Button 
+                variant="outline" 
+                size="sm"
+                asChild 
+                className="hidden lg:flex rounded-sm gap-2"
+              >
+                <Link href="https://discord.gg/seanfilimon" target="_blank">
+                  <IoLogoDiscord className="h-4 w-4" />
                 <span>Discord</span>
-              </Link>
-            </Button>
-            {!(isResourcesPage || isGitHubPage || isAdminPage) && (
-              <Button size="sm" asChild className="hidden md:flex rounded-sm font-bold">
-                <Link href="/about">Learn More</Link>
+                </Link>
               </Button>
-            )}
-            
-            {/* Mobile Menu Button - Always visible on mobile */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            {/* Auth Buttons */}
+            <SignedOut>
+              <SignInButton mode="modal">
+                <Button size="sm" className="hidden md:flex rounded-sm font-bold gap-2">
+                  <IoLogInOutline className="h-4 w-4" />
+                  Sign In
+                </Button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <UserDropdown />
+            </SignedIn>
+              
+              {/* Mobile Menu Button - Always visible on mobile */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden rounded-sm shrink-0"
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? (
-                <IoCloseOutline className="h-5 w-5" />
-              ) : (
-                <IoMenuOutline className="h-5 w-5" />
-              )}
-            </Button>
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? (
+                  <IoCloseOutline className="h-5 w-5" />
+                ) : (
+                  <IoMenuOutline className="h-5 w-5" />
+                )}
+              </Button>
           </div>
         </div>
       </div>
@@ -199,6 +366,17 @@ export function UnifiedNavbar() {
                     </div>
                   </Link>
                   <Link
+                    href="/articles"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-4 p-4 rounded-lg border hover:bg-accent transition-colors"
+                  >
+                    <IoDocumentTextOutline className="h-6 w-6" />
+                    <div>
+                      <div className="font-semibold text-lg">Articles</div>
+                      <div className="text-sm text-muted-foreground">Technical articles</div>
+                    </div>
+                  </Link>
+                  <Link
                     href="/resources"
                     onClick={() => setMobileMenuOpen(false)}
                     className="flex items-center gap-4 p-4 rounded-lg border hover:bg-accent transition-colors"
@@ -230,11 +408,17 @@ export function UnifiedNavbar() {
                       Join Discord
                     </Link>
                   </Button>
-                  <Button asChild className="w-full rounded-sm font-bold h-12">
-                    <Link href="/about" onClick={() => setMobileMenuOpen(false)}>
-                      Learn More
-                    </Link>
-                  </Button>
+                  <SignedOut>
+                    <SignInButton mode="modal">
+                      <Button className="w-full rounded-sm font-bold h-12 gap-2" onClick={() => setMobileMenuOpen(false)}>
+                        <IoLogInOutline className="h-5 w-5" />
+                        Sign In
+                      </Button>
+                    </SignInButton>
+                  </SignedOut>
+                  <SignedIn>
+                    <MobileUserMenu onClose={() => setMobileMenuOpen(false)} />
+                  </SignedIn>
                 </div>
               </div>
             )}

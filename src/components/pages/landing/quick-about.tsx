@@ -11,7 +11,20 @@ import {
   IoArrowForwardOutline
 } from "react-icons/io5";
 
-export function QuickAbout() {
+// Type for profile data passed from server
+interface ProfileData {
+  name: string;
+  title: string;
+  bio: string;
+  image: string;
+  location: string;
+}
+
+interface QuickAboutProps {
+  profile: ProfileData;
+}
+
+export function QuickAbout({ profile }: QuickAboutProps) {
   const aboutRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -19,15 +32,15 @@ export function QuickAbout() {
 
     gsap.registerPlugin(ScrollTrigger);
 
-    // Content animation - slide in from left
+    // Content animation with blur
     gsap.fromTo(
       ".about-content",
-      { opacity: 0, x: -50 },
+      { opacity: 0, filter: "blur(10px)" },
       {
         opacity: 1,
-        x: 0,
+        filter: "blur(0px)",
         duration: 0.8,
-        ease: "power3.out",
+        ease: "power2.out",
         scrollTrigger: {
           trigger: ".about-content",
           start: "top 80%",
@@ -36,15 +49,15 @@ export function QuickAbout() {
       }
     );
 
-    // Image animation - slide in from right
+    // Image animation with blur
     gsap.fromTo(
       ".about-image",
-      { opacity: 0, x: 50 },
+      { opacity: 0, filter: "blur(10px)" },
       {
         opacity: 1,
-        x: 0,
+        filter: "blur(0px)",
         duration: 0.8,
-        ease: "power3.out",
+        ease: "power2.out",
         scrollTrigger: {
           trigger: ".about-image",
           start: "top 80%",
@@ -53,13 +66,13 @@ export function QuickAbout() {
       }
     );
 
-    // Stats animation - fade in from bottom
+    // Stats animation with blur
     gsap.fromTo(
       ".about-stats",
-      { opacity: 0, y: 20 },
+      { opacity: 0, filter: "blur(8px)" },
       {
         opacity: 1,
-        y: 0,
+        filter: "blur(0px)",
         duration: 0.6,
         ease: "power2.out",
         scrollTrigger: {
@@ -86,8 +99,7 @@ export function QuickAbout() {
                 About Me
               </h2>
               <p className="text-xl text-muted-foreground leading-relaxed mb-6">
-                I&apos;m Sean, a full-stack developer passionate about building tools and sharing 
-                knowledge that helps developers create better software, faster.
+                I&apos;m {profile.name.split(" ")[0]}, a {profile.title?.toLowerCase() || "full-stack developer"} passionate about {profile.bio}
               </p>
               <p className="text-muted-foreground leading-relaxed">
                 With over 5 years in the industry, I&apos;ve worked with startups and enterprise 
@@ -100,7 +112,7 @@ export function QuickAbout() {
             <div className="about-stats py-4">
               <div className="flex items-center gap-2 text-sm">
                 <IoLocationOutline className="h-4 w-4 text-muted-foreground" />
-                <span>I travel a lot</span>
+                <span>{profile.location}</span>
               </div>
             </div>
 
@@ -117,8 +129,8 @@ export function QuickAbout() {
             <div className="relative">
               <div className="relative h-96 w-full rounded-sm overflow-hidden border-2">
                 <Image
-                  src="/face_grayscale_nobg.png"
-                  alt="Sean Filimon"
+                  src={profile.image}
+                  alt={profile.name}
                   fill
                   className="object-cover"
                 />
